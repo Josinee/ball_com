@@ -1,0 +1,17 @@
+com\ballcom\ordering\api\dto\OrderAcceptedResponse.class
+com\ballcom\ordering\api\OrderController.class
+com\ballcom\ordering\domain\OrderAggregate.class
+com\ballcom\ordering\infrastructure\persistence\PostgresEventStore.class
+com\ballcom\ordering\infrastructure\messaging\OrderRabbitConfig.class
+com\ballcom\ordering\commands\OrderCommandHandler.class
+com\ballcom\ordering\OrderingApplication.class
+com\ballcom\ordering\api\dto\PlaceOrderRequest.class
+com\ballcom\ordering\infrastructure\messaging\OrderProjectionHandler.class
+com\ballcom\ordering\api\dto\OrderViewResponse.class
+com\ballcom\ordering\domain\OrderItem.class
+com\ballcom\ordering\api\dto\PlaceOrderItemRequest.class
+com\ballcom\ordering\api\dto\OrderItemResponse.class
+com\ballcom\ordering\domain\OrderRepository.class
+com\ballcom\ordering\infrastructure\messaging\RabbitEventPublisher.class
+com\ballcom\ordering\domain\OrderStatus.class
+com\ballcom\ordering\commands\PlaceOrderCommand.class

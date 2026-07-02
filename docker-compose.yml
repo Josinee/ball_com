@@ -1,0 +1,39 @@
+services:
+  # 1. De Database
+  postgres:
+    image: postgres:16
+    container_name: ballcom-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: ballcom_ordering
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Dit zorgt ervoor dat ons init.sql script direct wordt uitgevoerd:
+      - ./postgres-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 2. De Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: ballcom-rabbitmq
+    ports:
+      - "5672:5672"   # Voor de Java code
+      - "15672:15672" # Voor het dashboard in je browser
+    environment:
+      RABBITMQ_DEFAULT_USER: ball_admin
+      RABBITMQ_DEFAULT_PASS: supersecretpassword
+
+  # 3. Jouw Ordering Microservice Slice
+  # ordering-service:
+  #   build: ./ballcom-ordering
+  #   container_name: ballcom-ordering
+  #   ports:
+  #     - "8081:8080" # We mappen poort 8080 uit de container naar 8081 op je pc
+  #   depends_on:
+  #     - postgres
+  #     - rabbitmq
+
+volumes:
+  pgdata:

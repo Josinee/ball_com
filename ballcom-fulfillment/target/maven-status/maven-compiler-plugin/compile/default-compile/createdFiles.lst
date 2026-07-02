@@ -1,0 +1,2 @@
+com\ballcom\fulfillment\infrastructure\FulfillmentRabbitConfig.class
+com\ballcom\fulfillment\infrastructure\OrderPlacedListener.class
