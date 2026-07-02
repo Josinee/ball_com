@@ -2,7 +2,7 @@ package com.ballcom.customer.application;
 
 import com.ballcom.customer.domain.CustomerAggregate;
 import com.ballcom.customer.domain.valueobject.Address;
-import com.ballcom.customer.domain.valueobject.EmailAddress;
+import com.ballcom.customer.domain.valueobject.Email;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ public class CustomerCommandHandler {
 
     @Transactional
     public UUID handle(RegisterCustomerCommand command){
-        EmailAddress emailAddress = new EmailAddress(command.email());
+        Email email = new Email(command.email());
         Address address = new Address(command.street(), command.houseNumber(), command.city(), command.zipCode());
         
-        CustomerAggregate customer = CustomerAggregate.register(command.name(), emailAddress, address);
+        CustomerAggregate customer = CustomerAggregate.register(command.name(), email, address);
 
         eventStore.append(customer.getId(), customer.getUncommitedEvents(), 0);
         customer.clearUncommitedEvents();

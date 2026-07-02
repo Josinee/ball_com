@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS processed_events (
 CREATE TABLE IF NOT EXISTS customer_views (
     customer_id UUID PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    email_address VARCHAR(50) NOT NULL,
-    address VARCHAR(100) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    street VARCHAR(25) NOT NULL,
+    house_number VARCHAR(10) NOT NULL,
+    city VARCHAR(25) NOT NULL,
+    zip_code VARCHAR(10) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );

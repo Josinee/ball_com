@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.ballcom.customer.domain.valueobject.Address;
-import com.ballcom.customer.domain.valueobject.EmailAddress;
+import com.ballcom.customer.domain.valueobject.Email;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
@@ -14,19 +14,19 @@ public class CustomerAggregate extends AggregateRoot{
 
     private UUID id;
     private String name;
-    private EmailAddress email;
+    private Email email;
     private Address address;
 
     public CustomerAggregate() {}
     
     //business logica, als alles mag worden er geen velden veranderd, alleen event aangemaakt
-    public static CustomerAggregate register(String name, EmailAddress emailAddress, Address address) {
+    public static CustomerAggregate register(String name, Email email, Address address) {
         UUID customerId = UUID.randomUUID();
         CustomerAggregate customer = new CustomerAggregate();
         customer.id = customerId;
         Map<String, Object> payload = Map.of(
             "name", name, 
-            "emailAddress", emailAddress.value(),
+            "email", email.value(),
             "street", address.street(),
             "houseNumber", address.houseNumber(),
             "city", address.city(),
@@ -50,7 +50,7 @@ public class CustomerAggregate extends AggregateRoot{
             this.id = event.aggregateId();
             Map<String, Object> payload = event.payload();
             this.name = (String) payload.get("name");
-            this.email = new EmailAddress((String) payload.get("emailAddress"));
+            this.email = new Email((String) payload.get("email"));
             this.address = new Address(
                 (String) payload.get("street"),
                 (String) payload.get("houseNumber"),

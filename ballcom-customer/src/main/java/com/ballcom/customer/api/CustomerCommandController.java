@@ -32,10 +32,7 @@ public class CustomerCommandController {
             request.city(),
             request.zipCode()
         );
-        System.out.println("ahllo");
-        System.out.println(" c ommand" + command);
         UUID customerId = commandHandler.handle(command);
-        System.out.println("in controller" + customerId);
         return ResponseEntity.accepted().body(new CustomerRegisteredResponse(customerId));
     }
 }

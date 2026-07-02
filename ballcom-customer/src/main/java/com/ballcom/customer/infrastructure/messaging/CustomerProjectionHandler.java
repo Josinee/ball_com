@@ -1,12 +1,11 @@
 package com.ballcom.customer.infrastructure.messaging;
 
 import com.ballcom.customer.domain.valueobject.Address;
-import com.ballcom.customer.domain.valueobject.EmailAddress;
+import com.ballcom.customer.domain.valueobject.Email;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
@@ -19,11 +18,9 @@ import org.springframework.stereotype.Component;
 public class CustomerProjectionHandler {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper;
 
-    public CustomerProjectionHandler(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+    public CustomerProjectionHandler(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.objectMapper = objectMapper;
     }
 
     // Deze methode luistert naar de queue
@@ -40,39 +37,58 @@ public class CustomerProjectionHandler {
             System.out.println("CONSUMER: Event ontvangen in de read-kant! Type: " + event.eventType()); // TODO engels?
             
             if (EventType.CUSTOMER_REGISTERED.equals(event.eventType())) {
-                try {
-                    Map<String, Object> payload = (Map<String, Object>) event.payload();
+                Map<String, Object> payload = (Map<String, Object>) event.payload();
 
-                    UUID customerId = event.aggregateId();
-                    String name = (String) payload.get("name");
-                    EmailAddress emailAddress = new EmailAddress((String) payload.get("emailAddress"));
-                    Address address = new Address((String) payload.get("street"), (String) payload.get("houseNumber"),(String) payload.get("city"),(String) payload.get("zipCode"));
+                UUID customerId = event.aggregateId();
+                String name = (String) payload.get("name");
+                String email = (String) payload.get("email");
+                String street = (String) payload.get("street");
+                String houseNumber = (String) payload.get("houseNumber");
+                String city = (String) payload.get("city");
+                String zipCode = (String) payload.get("zipCode");
+                
 
-                    String sql = """
-                        INSERT INTO customer_views (customer_id, name, email_address, address)
-                        VALUES (?, ?, ?, ?)
-                        ON CONFLICT (customer_id) DO UPDATE 
-                        SET status = EXCLUDED.status, updated_at = EXCLUDED.updated_at;
-                    """;
-
-                    jdbcTemplate.update(sql, 
-                        customerId,
+                String sql = """
+                    INSERT INTO customer_views (
+                        customer_id,
                         name,
-                        emailAddress,
-                        address,
-                        Timestamp.from(event.occurredAt())
-                    );
+                        email,
+                        street,
+                        house_number,
+                        city,
+                        zip_code,
+                        updated_at
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT (customer_id) DO UPDATE
+                    SET name = EXCLUDED.name,
+                        email = EXCLUDED.email,
+                        street = EXCLUDED.street,
+                        house_number = EXCLUDED.house_number,
+                        city = EXCLUDED.city,
+                        zip_code = EXCLUDED.zip_code,
+                        updated_at = EXCLUDED.updated_at
+                """;
 
-                    System.out.println("READ MODEL: Customer " + customerId + " succesvol opgeslagen in customer_views");
-                } catch (Exception e) {
-                    System.err.println("fout in verwerken van customer " + e.getMessage());
-                    e.printStackTrace();
-                }
+                jdbcTemplate.update(
+                    sql,
+                    customerId,
+                    name,
+                    email,
+                    street,
+                    houseNumber,
+                    city,
+                    zipCode,
+                    Timestamp.from(event.occurredAt())
+
+                );
+
+                System.out.println("Customer view opgeslagen: " + customerId);
             }
-        }catch(Exception e) {
-            System.err.println("fout in verwerken van customer " + e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println("ERROR processing customer event: " + e.getMessage());
             e.printStackTrace();
         }
-            
     }
 }
