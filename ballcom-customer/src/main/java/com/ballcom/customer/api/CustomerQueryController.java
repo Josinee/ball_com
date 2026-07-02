@@ -23,14 +23,16 @@ public class CustomerQueryController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerViewResponse> getCustomerById(@PathVariable UUID customerId) {
-        String sql = "SELECT customer_id, name, email, street, house_number, city, zip_code FROM customer_views WHERE customer_id = ?";
+        String sql = "SELECT customer_id, company_name, first_name, last_name, phone_number, street, house_number, city, zip_code FROM customer_views WHERE customer_id = ?";
 
         try {
             CustomerViewResponse customerView = jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
             new CustomerViewResponse(
                 UUID.fromString(rs.getString("customer_id")),
-                rs.getString("name"),
-                rs.getString("email"),
+                rs.getString("company_name"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("phone_number"),
                 rs.getString("street"),
                 rs.getString("house_number"),
                 rs.getString("city"),

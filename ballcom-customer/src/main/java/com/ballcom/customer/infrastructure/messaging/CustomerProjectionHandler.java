@@ -1,7 +1,6 @@
 package com.ballcom.customer.infrastructure.messaging;
 
 import com.ballcom.customer.domain.valueobject.Address;
-import com.ballcom.customer.domain.valueobject.Email;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,8 +39,10 @@ public class CustomerProjectionHandler {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
 
                 UUID customerId = event.aggregateId();
-                String name = (String) payload.get("name");
-                String email = (String) payload.get("email");
+                String companyName = (String) payload.get("companyName");
+                String firstName = (String) payload.get("firstName");
+                String lastName = (String) payload.get("lastName");
+                String phoneNumber = (String) payload.get("phoneNumber");
                 String street = (String) payload.get("street");
                 String houseNumber = (String) payload.get("houseNumber");
                 String city = (String) payload.get("city");
@@ -51,18 +52,22 @@ public class CustomerProjectionHandler {
                 String sql = """
                     INSERT INTO customer_views (
                         customer_id,
-                        name,
-                        email,
+                        company_name,
+                        first_name,
+                        last_name,
+                        phone_number,
                         street,
                         house_number,
                         city,
                         zip_code,
                         updated_at
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT (customer_id) DO UPDATE
-                    SET name = EXCLUDED.name,
-                        email = EXCLUDED.email,
+                    SET company_name = EXCLUDED.company_name,
+                        first_name = EXCLUDED.first_name,
+                        last_name = EXCLUDED.last_name,
+                        phone_number = EXCLUDED.phone_number,
                         street = EXCLUDED.street,
                         house_number = EXCLUDED.house_number,
                         city = EXCLUDED.city,
@@ -73,8 +78,10 @@ public class CustomerProjectionHandler {
                 jdbcTemplate.update(
                     sql,
                     customerId,
-                    name,
-                    email,
+                    companyName,
+                    firstName,
+                    lastName,
+                    phoneNumber,
                     street,
                     houseNumber,
                     city,

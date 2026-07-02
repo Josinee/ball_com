@@ -24,14 +24,18 @@ public class CustomerCommandController {
 
     @PostMapping
     public ResponseEntity<CustomerRegisteredResponse> registerCustomer(@RequestBody CustomerRegisterRequest request) {
-    var command = new RegisterCustomerCommand(
-            request.name(),
-            request.email(),
-            request.street(),
-            request.houseNumber(),
-            request.city(),
-            request.zipCode()
+
+        var command = new RegisterCustomerCommand(
+                request.companyName(),
+                request.firstName(),
+                request.lastName(),
+                request.phoneNumber(),
+                request.street(),
+                request.houseNumber(),
+                request.city(),
+                request.zipCode()
         );
+        
         UUID customerId = commandHandler.handle(command);
         return ResponseEntity.accepted().body(new CustomerRegisteredResponse(customerId));
     }

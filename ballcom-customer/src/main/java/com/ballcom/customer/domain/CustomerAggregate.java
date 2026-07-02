@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.ballcom.customer.domain.valueobject.Address;
-import com.ballcom.customer.domain.valueobject.Email;
+import com.ballcom.customer.domain.valueobject.PhoneNumber;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
@@ -13,20 +13,24 @@ import com.ballcom.shared.eventsourcing.AggregateRoot;
 public class CustomerAggregate extends AggregateRoot{
 
     private UUID id;
-    private String name;
-    private Email email;
+    private String companyName;
+    private String firstName;
+    private String lastName;
+    private PhoneNumber phoneNumber;
     private Address address;
 
     public CustomerAggregate() {}
     
     //business logica, als alles mag worden er geen velden veranderd, alleen event aangemaakt
-    public static CustomerAggregate register(String name, Email email, Address address) {
+    public static CustomerAggregate register(String companyName, String firstName, String lastName, PhoneNumber phoneNumber, Address address) {
         UUID customerId = UUID.randomUUID();
         CustomerAggregate customer = new CustomerAggregate();
         customer.id = customerId;
         Map<String, Object> payload = Map.of(
-            "name", name, 
-            "email", email.value(),
+            "companyName", companyName,
+            "firstName", firstName, 
+            "lastName", lastName,
+            "phoneNumber", phoneNumber.value(),
             "street", address.street(),
             "houseNumber", address.houseNumber(),
             "city", address.city(),
@@ -49,8 +53,10 @@ public class CustomerAggregate extends AggregateRoot{
         if(EventType.CUSTOMER_REGISTERED.equals(event.eventType())) {
             this.id = event.aggregateId();
             Map<String, Object> payload = event.payload();
-            this.name = (String) payload.get("name");
-            this.email = new Email((String) payload.get("email"));
+            this.companyName = (String) payload.get("companyName");
+            this.firstName = (String) payload.get("firstName");
+            this.lastName = (String) payload.get("lastName");
+            this.phoneNumber = new PhoneNumber((String) payload.get("phoneNumber"));
             this.address = new Address(
                 (String) payload.get("street"),
                 (String) payload.get("houseNumber"),

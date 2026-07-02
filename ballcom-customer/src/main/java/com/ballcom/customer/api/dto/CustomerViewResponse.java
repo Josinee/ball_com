@@ -4,8 +4,10 @@ import java.util.UUID;
 
 public record CustomerViewResponse(
     UUID customerId,
-    String name,
-    String email,
+    String companyName,
+    String firstName,
+    String lastName,
+    String phoneNumber,
     String street,
     String houseNumber,
     String city,

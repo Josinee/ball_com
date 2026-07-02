@@ -1,4 +1,3 @@
-com\ballcom\customer\domain\valueobject\Email.class
 com\ballcom\customer\domain\valueobject\Address.class
 com\ballcom\customer\api\CustomerCommandController.class
 com\ballcom\customer\api\dto\CustomerRegisteredResponse.class
@@ -6,10 +5,13 @@ com\ballcom\customer\application\CustomerCommandHandler.class
 com\ballcom\customer\application\RegisterCustomerCommand.class
 com\ballcom\customer\infrastructure\messaging\RabbitEventPublisher.class
 com\ballcom\customer\api\CustomerQueryController.class
+com\ballcom\customer\infrastructure\importer\CustomerImportService.class
 com\ballcom\customer\CustomerApplication.class
 com\ballcom\customer\domain\CustomerAggregate.class
+com\ballcom\customer\domain\valueobject\PhoneNumber.class
 com\ballcom\customer\infrastructure\messaging\OrderRabbitConfig.class
 com\ballcom\customer\api\dto\CustomerViewResponse.class
 com\ballcom\customer\infrastructure\messaging\CustomerProjectionHandler.class
 com\ballcom\customer\infrastructure\persistence\PostgresEventStore.class
 com\ballcom\customer\api\dto\CustomerRegisterRequest.class
+com\ballcom\customer\api\CustomerImportController.class
