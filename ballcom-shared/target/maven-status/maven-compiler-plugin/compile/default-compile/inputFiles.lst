@@ -2,5 +2,6 @@ C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\cqrs\Command.jav
 C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\eventsourcing\AggregateRoot.java
 C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\messaging\RabbitConfig.java
 C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\events\GenericDomainEvent.java
+C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\events\EventType.java
 C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\eventsourcing\EventStore.java
 C:\dev\ball_com\ballcom-shared\src\main\java\com\ballcom\shared\messaging\EventPublisher.java

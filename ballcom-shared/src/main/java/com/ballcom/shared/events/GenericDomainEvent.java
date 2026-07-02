@@ -9,7 +9,7 @@ public record GenericDomainEvent(
     UUID eventId,
     UUID aggregateId,
     long sequenceNumber,
-    String eventType,
+    EventType eventType,
     Instant occurredAt,
     Map<String, Object> payload //alle specifieke data
 ) {}

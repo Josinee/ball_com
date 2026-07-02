@@ -1,5 +1,6 @@
 package com.ballcom.ordering.infrastructure.messaging;
 
+import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,7 +37,7 @@ public class OrderProjectionHandler {
         
             System.out.println("CONSUMER: Event ontvangen in de read-kant! Type: " + event.eventType()); // TODO engels?
             
-            if ("OrderPlaced".equals(event.eventType())) {
+            if (EventType.ORDER_PLACED.equals(event.eventType())) {
                 try {
                     Map<String, Object> payload = (Map<String, Object>) event.payload();
 

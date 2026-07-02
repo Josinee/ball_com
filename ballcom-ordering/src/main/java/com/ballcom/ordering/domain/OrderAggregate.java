@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
 
@@ -48,7 +49,7 @@ public class OrderAggregate extends AggregateRoot {
             UUID.randomUUID(), 
             orderId, 
             1, 
-            "OrderPlaced", 
+            EventType.ORDER_PLACED, 
             Instant.now(), 
             payload
         );
@@ -63,7 +64,7 @@ public class OrderAggregate extends AggregateRoot {
     // Dit is de officiële override voor jouw generieke event!
     @Override
     protected void apply(GenericDomainEvent event) {
-        if ("OrderPlaced".equals(event.eventType())) {
+        if (EventType.ORDER_PLACED.equals(event.eventType())) {
             this.id = event.aggregateId(); // Pak het ID uit de buitenkant van de enveloppe
             
             Map<String, Object> data = event.payload();
