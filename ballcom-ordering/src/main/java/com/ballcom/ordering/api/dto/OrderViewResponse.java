@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 
-
+//geeft het order bij een GET request
 public record OrderViewResponse(
     UUID orderId,
     UUID customerId,

@@ -18,3 +18,8 @@ CREATE TABLE IF NOT EXISTS order_views (
     status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS processed_events (
+    event_id UUID PRIMARY KEY,
+    processed_at TIMESTAMP NOT NULL
+);
