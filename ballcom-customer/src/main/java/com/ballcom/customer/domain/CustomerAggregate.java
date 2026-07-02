@@ -23,7 +23,7 @@ public class CustomerAggregate extends AggregateRoot{
     public static CustomerAggregate register(String name, EmailAddress emailAddress, Address address) {
         UUID customerId = UUID.randomUUID();
         CustomerAggregate customer = new CustomerAggregate();
-
+        customer.id = customerId;
         Map<String, Object> payload = Map.of(
             "name", name, 
             "emailAddress", emailAddress.value(),
@@ -33,10 +33,11 @@ public class CustomerAggregate extends AggregateRoot{
             "zipCode", address.zipCode()
         );
 
-        long nextSequence = customer.getSequenceNumber() + 1;
+     
         
-        GenericDomainEvent event = new GenericDomainEvent(UUID.randomUUID(), customerId, nextSequence, EventType.CUSTOMER_REGISTERED, Instant.now(), payload)
+        GenericDomainEvent event = new GenericDomainEvent(UUID.randomUUID(), customerId, 0, EventType.CUSTOMER_REGISTERED, Instant.now(), payload);
         customer.raiseEvent(event);
+        System.out.println("in register in aggregate " + customer.id);
         return customer;
     }
 
@@ -58,6 +59,10 @@ public class CustomerAggregate extends AggregateRoot{
             );
         }
         this.sequenceNumber = event.sequenceNumber();
+    }
+
+    public UUID getId() {
+        return this.id;
     }
 
 

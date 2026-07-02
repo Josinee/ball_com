@@ -4,6 +4,7 @@ package com.ballcom.ordering.application;
 import com.ballcom.ordering.domain.OrderAggregate;
 import com.ballcom.ordering.domain.OrderItem;
 import com.ballcom.ordering.infrastructure.persistence.PostgresEventStore;
+import com.ballcom.shared.eventsourcing.EventStore;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,22 +15,25 @@ import java.util.UUID;
 
 @Service
 public class OrderCommandHandler {
-    private final PostgresEventStore eventStore;
+    private final EventStore eventStore;
 
-    public OrderCommandHandler(PostgresEventStore eventStore) {
+    public OrderCommandHandler(EventStore eventStore) {
         this.eventStore = eventStore;
     }
 
     @Transactional
     public UUID handle(PlaceOrderCommand command) {
         //krijg de items uit de command, vertaal het naar domeinobjecten
-        List<OrderItem> items = command.items();
+        List<OrderItem> items = command.items().stream()
+            .map(i -> new OrderItem(i.productId(), i.quantity(), i.unitPrice())) // HIER pas het domein-object maken!
+            .toList();
 
         //omdat het een nieuwe order is, maakt hij een nieuwe OrderAggregate, aggregate slaat de event intern op
         OrderAggregate order = OrderAggregate.place(command.customerId(), items);
 
+
         //sla event op in eventstore
-        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getVersion());
+        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getSequenceNumber());
         //publiceer een message dat het event heeft plaatsgevonden
         order.clearUncommitedEvents();
         return order.getId();

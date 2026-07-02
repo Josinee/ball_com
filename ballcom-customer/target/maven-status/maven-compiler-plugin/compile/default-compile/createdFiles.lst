@@ -1,0 +1,10 @@
+com\ballcom\customer\CustomerApplication.class
+com\ballcom\customer\domain\CustomerAggregate.class
+com\ballcom\customer\domain\valueobject\Address.class
+com\ballcom\customer\domain\valueobject\EmailAddress.class
+com\ballcom\customer\api\CustomerCommandController.class
+com\ballcom\customer\api\dto\CustomerRegisteredResponse.class
+com\ballcom\customer\application\CustomerCommandHandler.class
+com\ballcom\customer\application\RegisterCustomerCommand.class
+com\ballcom\customer\infrastructure\persistence\PostgresEventStore.class
+com\ballcom\customer\api\dto\CustomerRegisterRequest.class

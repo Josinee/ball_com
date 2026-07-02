@@ -23,3 +23,11 @@ CREATE TABLE IF NOT EXISTS processed_events (
     event_id UUID PRIMARY KEY,
     processed_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS customer_views (
+    customer_id UUID PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email_address VARCHAR(50) NOT NULL,
+    address VARCHAR(100) NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);

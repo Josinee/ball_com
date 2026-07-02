@@ -1,10 +1,10 @@
 package com.ballcom.ordering.application;
 
-import com.ballcom.ordering.domain.OrderItem;
-
-
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-public record PlaceOrderCommand(UUID customerId, List<OrderItem> items) {
+public record PlaceOrderCommand(UUID customerId, List<OrderItemData> items) {
+   
+    public record OrderItemData(UUID productId, int quantity, BigDecimal unitPrice) {}
 }

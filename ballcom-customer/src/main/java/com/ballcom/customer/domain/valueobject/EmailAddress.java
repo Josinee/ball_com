@@ -6,4 +6,5 @@ public record EmailAddress(String value) {
             throw new IllegalArgumentException("Invalid email format");
         }
     }
+
 }

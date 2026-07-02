@@ -4,7 +4,7 @@ import com.ballcom.ordering.api.dto.OrderAcceptedResponse;
 import com.ballcom.ordering.api.dto.PlaceOrderRequest;
 import com.ballcom.ordering.application.OrderCommandHandler;
 import com.ballcom.ordering.application.PlaceOrderCommand;
-import com.ballcom.ordering.domain.OrderItem;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +28,17 @@ public class OrderCommandController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
-        List<OrderItem> items = request.items().stream()
-                .map(i -> new OrderItem(i.productId(), i.quantity(), i.unitPrice()))
-                .toList();
+@PostMapping
+public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
+    
+    List<PlaceOrderCommand.OrderItemData> commandItems = request.items().stream()
+            .map(i -> new PlaceOrderCommand.OrderItemData(i.productId(), i.quantity(), i.unitPrice()))
+            .toList();
 
-        UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), items));
+    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems));
 
-        return ResponseEntity.accepted()
-                .location(URI.create("/orders/" + orderId))
-                .body(new OrderAcceptedResponse(orderId));
-    }
+    return ResponseEntity.accepted()
+            .location(URI.create("/orders/" + orderId))
+            .body(new OrderAcceptedResponse(orderId));
+}
 }
