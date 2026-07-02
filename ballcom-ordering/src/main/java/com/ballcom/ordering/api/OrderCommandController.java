@@ -2,8 +2,8 @@ package com.ballcom.ordering.api;
 
 import com.ballcom.ordering.api.dto.OrderAcceptedResponse;
 import com.ballcom.ordering.api.dto.PlaceOrderRequest;
-import com.ballcom.ordering.commands.OrderCommandHandler;
-import com.ballcom.ordering.commands.PlaceOrderCommand;
+import com.ballcom.ordering.application.OrderCommandHandler;
+import com.ballcom.ordering.application.PlaceOrderCommand;
 import com.ballcom.ordering.domain.OrderItem;
 
 import org.springframework.http.ResponseEntity;

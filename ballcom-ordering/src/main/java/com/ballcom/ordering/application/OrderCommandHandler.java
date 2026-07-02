@@ -1,4 +1,4 @@
-package com.ballcom.ordering.commands;
+package com.ballcom.ordering.application;
 
 
 import com.ballcom.ordering.domain.OrderAggregate;
