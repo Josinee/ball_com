@@ -36,3 +36,4 @@ CREATE TABLE IF NOT EXISTS customer_views (
     zip_code VARCHAR(10) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+

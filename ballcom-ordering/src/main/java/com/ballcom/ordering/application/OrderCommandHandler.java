@@ -3,17 +3,17 @@ package com.ballcom.ordering.application;
 
 import com.ballcom.ordering.domain.OrderAggregate;
 import com.ballcom.ordering.domain.OrderItem;
-import com.ballcom.ordering.infrastructure.persistence.PostgresEventStore;
 import com.ballcom.shared.eventsourcing.EventStore;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 
-@Service
+@Component
 public class OrderCommandHandler {
     private final EventStore eventStore;
 

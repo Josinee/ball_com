@@ -2,7 +2,6 @@ package com.ballcom.ordering.infrastructure.messaging;
 
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -14,14 +13,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderProjectionHandler {
+public class OrderEventListener {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper;
 
-    public OrderProjectionHandler(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+    public OrderEventListener(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.objectMapper = objectMapper;
+
     }
 
     // Deze methode luistert naar de queue

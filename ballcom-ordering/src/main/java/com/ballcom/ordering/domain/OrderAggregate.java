@@ -23,7 +23,7 @@ public class OrderAggregate extends AggregateRoot {
     public OrderAggregate() {}
 
     // De statische fabrieksmethode om een order te plaatsen
-    public static OrderAggregate place(UUID customerId, List<OrderItem> items) {
+    public static OrderAggregate place(UUID customerId, List<OrderItem> items, String paymentMethod) {
         // Business regels valideren
         if (items == null || items.isEmpty() || items.size() > 20) {
             throw new IllegalArgumentException("An order must contain between 1 and 20 items");
@@ -41,6 +41,7 @@ public class OrderAggregate extends AggregateRoot {
         Map<String, Object> payload = Map.of(
             "customerId", customerId.toString(), 
             "items", items, 
+            "paymentMethod", paymentMethod,
             "totalAmount", total.toString()
         );
 

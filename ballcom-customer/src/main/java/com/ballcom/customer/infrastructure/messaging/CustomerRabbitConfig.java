@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OrderRabbitConfig {
+public class CustomerRabbitConfig {
 
     //maakt topic aan waaraan listeners kunnen subscriben
     @Bean

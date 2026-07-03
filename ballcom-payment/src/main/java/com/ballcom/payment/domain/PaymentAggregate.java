@@ -1,0 +1,121 @@
+package com.ballcom.payment.domain;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+
+import com.ballcom.shared.events.EventType;
+import com.ballcom.shared.events.GenericDomainEvent;
+import com.ballcom.shared.eventsourcing.AggregateRoot;
+
+public class PaymentAggregate extends AggregateRoot {
+    private UUID paymentId;
+    private UUID customerId;
+    private UUID orderid;
+    private BigDecimal total;
+    private PaymentMethod paymentMethod;
+    private PaymentStatus status;
+
+    public PaymentAggregate() {}
+
+    public static PaymentAggregate initiate(UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {
+        PaymentAggregate payment = new PaymentAggregate();
+        UUID paymentId = UUID.randomUUID();
+        Map<String, Object> payload = Map.of(
+            "customerId", customerId.toString(),
+            "orderId", orderId.toString(),
+            "total", total.toString(),
+            "paymentMethod", paymentMethod.name(),
+            "status", "INITIATED"
+        );
+
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),                        
+            paymentId,  
+            payment.getSequenceNumber() + 1,
+            EventType.PAYMENT_INITIATED,
+            Instant.now(),
+            payload
+        );
+        payment.raiseEvent(event);
+        return payment;
+    }
+
+    public void holdForDelivery() {
+        if (this.status != PaymentStatus.INITIATED) return;
+
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),                        
+            this.paymentId,  
+            this.getSequenceNumber() + 1,
+            EventType.PAYMENT_AWAITING_DELIVERY,
+            Instant.now(),
+            Map.of("status", "PENDING_DELIVERY")
+        );
+        this.raiseEvent(event);
+    }
+
+    public void complete() {
+        if(this.status == PaymentStatus.COMPLETED) return;
+
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),
+            this.id,
+            this.getSequenceNumber() + 1,
+            EventType.PAYMENT_COMPLETED,
+            Instant.now(),
+            Map.of("status", "COMPLETED")
+        );
+
+        this.raiseEvent(event);
+    }
+
+    public void fail(String reason) {
+        if (this.status == PaymentStatus.FAILED) return;
+
+        Map<String, Object> payload = Map.of(
+            "status", "FAILED",
+            "reason", reason
+        );
+
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),
+            this.id,
+            this.getSequenceNumber() + 1,
+            EventType.PAYMENT_FAILED,
+            Instant.now(),
+            payload
+        );
+
+        this.raiseEvent(event);
+    }
+
+    @Override
+    protected void apply(GenericDomainEvent event) {
+        this.id = event.aggregateId();
+        this.paymentId = event.aggregateId();
+        
+        Map<String, Object> payload = event.payload();
+
+        if (EventType.PAYMENT_INITIATED.equals(event.eventType())) {
+            this.customerId = UUID.fromString((String) payload.get("customerId"));
+            this.orderid = UUID.fromString((String) payload.get("orderId"));
+            this.total = new BigDecimal((String) payload.get("total"));
+            this.paymentMethod = PaymentMethod.valueOf((String) payload.get("paymentMethod"));
+            this.status = PaymentStatus.INITIATED;
+        } 
+        
+        else if (EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
+            this.status = PaymentStatus.COMPLETED;
+        } 
+        
+        else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
+            this.status = PaymentStatus.FAILED;
+        }
+    
+
+    }
+
+
+}
