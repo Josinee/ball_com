@@ -29,7 +29,7 @@ public class OrderCommandHandler {
             .toList();
 
         //omdat het een nieuwe order is, maakt hij een nieuwe OrderAggregate, aggregate slaat de event intern op
-        OrderAggregate order = OrderAggregate.place(command.customerId(), items);
+        OrderAggregate order = OrderAggregate.place(command.customerId(), items, command.paymentMethod());
 
 
         //sla event op in eventstore

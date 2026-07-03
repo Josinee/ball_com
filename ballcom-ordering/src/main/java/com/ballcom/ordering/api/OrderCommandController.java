@@ -35,7 +35,7 @@ public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderR
             .map(i -> new PlaceOrderCommand.OrderItemData(i.productId(), i.quantity(), i.unitPrice()))
             .toList();
 
-    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems));
+    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems, request.paymentMethod()));
 
     return ResponseEntity.accepted()
             .location(URI.create("/orders/" + orderId))
