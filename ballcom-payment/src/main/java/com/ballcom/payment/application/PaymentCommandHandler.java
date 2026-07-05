@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.ballcom.payment.domain.PaymentAggregate;
 import com.ballcom.payment.domain.PaymentMethod;
+import com.ballcom.payment.infrastructure.persistence.PostgresEventStore;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 import java.util.List;
@@ -56,15 +57,17 @@ public class PaymentCommandHandler {
      */
     @Transactional
     public void handle(CompletePaymentCommand command) {
-        // 1. Reconstitueer: Haal de geschiedenis op en breng de aggregate tot leven
-        List<GenericDomainEvent> history = eventStore.loadEvents(command.orderId());
+        // 1. Haal de geschiedenis op via de orderId (de database zoekt nu zelf de juiste paymentId erbij)
+        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
+        
+        // 2. Breng aggregate tot leven
         PaymentAggregate payment = new PaymentAggregate();
         payment.loadFromHistory(history);
 
-        // 2. Voer business logica uit (Status verandert naar COMPLETED)
+        // 3. Status naar COMPLETED
         payment.complete();
 
-        // 3. Sla het PAYMENT_COMPLETED event op
+        // 4. Sla het PAYMENT_COMPLETED event op
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
     }
@@ -77,8 +80,9 @@ public class PaymentCommandHandler {
     @Transactional
     public void handle(FailPaymentCommand command) {
         // 1. Reconstitueer de betaling uit de Event Store
-        List<GenericDomainEvent> history = eventStore.loadEvents(command.orderId());
+        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
         PaymentAggregate payment = new PaymentAggregate();
+        
         payment.loadFromHistory(history);
 
         // 2. Voer business logica uit (Status verandert naar FAILED met een reden)

@@ -51,12 +51,31 @@ public class PostgresEventStore implements EventStore {
                 jdbcTemplate.update(sql, event.eventId(), event.aggregateId(), "Payment", event.sequenceNumber(),
                         event.eventType().name(), jsonPayload, java.sql.Timestamp.from(event.occurredAt()));
 
+                if (event.eventType() == EventType.PAYMENT_INITIATED) {
+                    UUID orderId = UUID.fromString((String) event.payload().get("orderId"));
+                    String mappingSql = "INSERT INTO order_payment_mapping (order_id, payment_id) VALUES (?, ?) "
+                                      + "ON CONFLICT (order_id) DO NOTHING";
+                    jdbcTemplate.update(mappingSql, orderId, event.aggregateId());
+                }
+
                 eventPublisher.publish(event);
 
             } catch (Exception e) {
                 throw new RuntimeException("Error writing event to store", e);
             }
         }
+    }
+
+    public List<GenericDomainEvent> loadEventsByOrderId(UUID orderId) {
+        String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
+        
+        List<UUID> paymentIds = jdbcTemplate.query(lookupSql, (rs, rowNum) -> rs.getObject("payment_id", UUID.class), orderId);
+        
+        if (paymentIds.isEmpty()) {
+            throw new RuntimeException("Geen betaling gevonden voor orderId: " + orderId);
+        }
+
+        return loadEvents(paymentIds.get(0));
     }
 
     private long getCurrentVersion(UUID aggregateId) {
@@ -73,8 +92,8 @@ public class PostgresEventStore implements EventStore {
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             try {
 
-                UUID eventId = UUID.fromString(rs.getString("id"));
-                UUID aggId = UUID.fromString(rs.getString("aggregate_id"));
+                UUID eventId = rs.getObject("id", UUID.class);
+                UUID aggId = rs.getObject("aggregate_id", UUID.class);
                 String aggegateType = rs.getString("aggregate_type");
                 long sequenceNumber = rs.getLong("sequence_number");
                 EventType eventType = EventType.valueOf(rs.getString("event_type"));
@@ -89,7 +108,9 @@ public class PostgresEventStore implements EventStore {
             } catch (Exception e) {
                 throw new RuntimeException("Fout bij het omzetten van database row naar GenericDomainEvent", e);
             }
-        }, aggregateId.toString());
+        }, aggregateId);
     }
+
+
 
 }

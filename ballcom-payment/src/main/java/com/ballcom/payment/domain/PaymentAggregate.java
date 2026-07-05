@@ -89,7 +89,7 @@ public class PaymentAggregate extends AggregateRoot {
     }
 
     @Override
-    protected void apply(GenericDomainEvent event) {
+    public void apply(GenericDomainEvent event) {
         this.id = event.aggregateId();
         
         Map<String, Object> payload = event.payload();

@@ -33,20 +33,21 @@ public class OrderEventListener {
             }
             if(EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
-                String orderId = (String) payload.get("orderId");
+                String orderIdString = (String) payload.get("orderId");
+                UUID orderId = UUID.fromString(orderIdString);
 
                 String sql = "UPDATE order_views SET payment_status = 'PAID' WHERE order_id = ?";
                 jdbcTemplate.update(sql, orderId);
-                System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als BETAALD.");
+                System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als PAID.");
             } 
             
             else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
-                String orderId = (String) payload.get("orderId");
-
+                String orderIdString = (String) payload.get("orderId");
+                UUID orderId = UUID.fromString(orderIdString);
                 String sql = "UPDATE order_views SET payment_status = 'PAYMENT_FAILED' WHERE order_id = ?";
                 jdbcTemplate.update(sql, orderId);
-                System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als BETALING MISLUKT.");
+                System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als PAYMENT FAILED.");
             }
 
         } catch (Exception e) {
@@ -70,7 +71,6 @@ public class OrderEventListener {
             
             if (EventType.ORDER_PLACED.equals(event.eventType())) {
                 try {
-                    @SuppressWarnings("unchecked")
                     Map<String, Object> payload = (Map<String, Object>) event.payload();
 
                     UUID orderId = event.aggregateId();

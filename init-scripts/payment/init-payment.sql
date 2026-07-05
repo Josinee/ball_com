@@ -23,3 +23,8 @@ CREATE TABLE IF NOT EXISTS payment_views (
     status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS order_payment_mapping (
+    order_id UUID PRIMARY KEY,
+    payment_id UUID NOT NULL
+);

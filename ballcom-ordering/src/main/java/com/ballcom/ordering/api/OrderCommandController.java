@@ -28,7 +28,7 @@ public class OrderCommandController {
     }
 
 
-@PostMapping
+@PostMapping("placeorder")
 public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
     
     List<PlaceOrderCommand.OrderItemData> commandItems = request.items().stream()
