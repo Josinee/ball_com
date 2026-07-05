@@ -1,18 +1,31 @@
 services:
   # 1. De Database
-  postgres:
+  postgres-ordering:
     image: postgres:16
-    container_name: ballcom-postgres
-    ports:
-      - "5455:5432"
+    container_name: postgres-ordering
     environment:
+      POSTGRES_DB: ordering_db
       POSTGRES_USER: ball_admin
       POSTGRES_PASSWORD: supersecretpassword
-      POSTGRES_DB: ballcom_ordering
+    ports:
+      - "5455:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      # Dit zorgt ervoor dat ons init.sql script direct wordt uitgevoerd:
-      - ./postgres-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ordering_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/ordering:/docker-entrypoint-initdb.d
+
+  # Database voor de Payment service
+  postgres-payment:
+    image: postgres:16
+    container_name: postgres-payment
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5456:5432"
+    volumes:
+      - payment_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/payment:/docker-entrypoint-initdb.d
 
   # 2. De Message Broker
   rabbitmq:
@@ -36,4 +49,5 @@ services:
   #     - rabbitmq
 
 volumes:
-  pgdata:
+  ordering_postgres_data:
+  payment_postgres_data:

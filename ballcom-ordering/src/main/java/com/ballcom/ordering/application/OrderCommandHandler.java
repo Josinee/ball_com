@@ -3,6 +3,7 @@ package com.ballcom.ordering.application;
 
 import com.ballcom.ordering.domain.OrderAggregate;
 import com.ballcom.ordering.domain.OrderItem;
+import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 
 import org.springframework.stereotype.Component;
@@ -33,10 +34,26 @@ public class OrderCommandHandler {
 
 
         //sla event op in eventstore
-        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getSequenceNumber());
+        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
         //publiceer een message dat het event heeft plaatsgevonden
         order.clearUncommitedEvents();
         return order.getId();
+    }
+
+    @Transactional
+    public UUID handle(ConfirmOrderPaymentCommand command) {
+        //haal events op uit eventstore
+        List<GenericDomainEvent> history = eventStore.loadEvents(command.orderId());
+        // reconstruct aggregate uit de history
+        OrderAggregate order = new OrderAggregate();
+        order.loadFromHistory(history);
+
+        order.confirmPayment();
+        //sla nieuwe event van confirm payment op
+        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
+        order.clearUncommitedEvents();
+        return order.getId();
+
     }
     
 }

@@ -27,4 +27,20 @@ public class OrderRabbitConfig {
     public Binding orderBinding(Queue orderQueue, TopicExchange orderExchange) { //TODO wat is dit wat doet het
         return BindingBuilder.bind(orderQueue).to(orderExchange).with("order.#");
     }
+
+
+    @Bean
+    public Queue orderPaymentEventsQueue() {
+        return new Queue("ordering-payment-updates-queue", true);
+    }
+
+    @Bean
+    public TopicExchange paymentExchange() {
+        return new TopicExchange("payment.exchange", true, false);
+    }
+
+    @Bean
+    public Binding orderPaymentBinding(Queue orderPaymentEventsQueue, TopicExchange paymentExchange) {
+        return BindingBuilder.bind(orderPaymentEventsQueue).to(paymentExchange).with("payment.#");
+    }
 }

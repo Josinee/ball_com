@@ -10,19 +10,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PaymentRabbitConfig {
 
-    //maakt topic aan waaraan listeners kunnen subscriben
+    @Bean
+    public Queue orderPlacedQueue() {
+        return new Queue("payment-order-placed-queue", true);
+    }
+
+    @Bean
+    public TopicExchange orderExchange() {
+        return new TopicExchange("order.exchange", true, false);
+    }
+
+    @Bean
+    public Binding orderPlacedBinding(Queue orderPlacedQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(orderPlacedQueue).to(orderExchange).with("order.placed");
+    }
+
+
+
     @Bean
     public TopicExchange paymentExchange() {
         return new TopicExchange("payment.exchange", true, false);
     }
 
     @Bean
-    public Queue customerQueue() {
-        return new Queue("payment-readmodel-queue", true);//durable true = overleefd herstart van rabbitmq
+    public Queue paymentQueue() {
+        return new Queue("payment-readmodel-queue", true);
     }
 
     @Bean
-    public Binding customerBinding(Queue paymentQueue, TopicExchange paymentExchange) { //TODO wat is dit wat doet het
+    public Binding customerBinding(Queue paymentQueue, TopicExchange paymentExchange) {
+
         return BindingBuilder.bind(paymentQueue).to(paymentExchange).with("payment.#");
     }
 }

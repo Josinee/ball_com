@@ -38,8 +38,8 @@ public class CustomerAggregate extends AggregateRoot{
         );
 
      
-        
-        GenericDomainEvent event = new GenericDomainEvent(UUID.randomUUID(), customerId, 0, EventType.CUSTOMER_REGISTERED, Instant.now(), payload);
+        long nextSequence = customer.getSequenceNumber() + 1;
+        GenericDomainEvent event = new GenericDomainEvent(UUID.randomUUID(), customerId, nextSequence, EventType.CUSTOMER_REGISTERED, Instant.now(), payload);
         customer.raiseEvent(event);
         System.out.println("in register in aggregate " + customer.id);
         return customer;
@@ -64,7 +64,7 @@ public class CustomerAggregate extends AggregateRoot{
                 (String) payload.get("zipCode")
             );
         }
-        this.sequenceNumber = event.sequenceNumber();
+
     }
 
     public UUID getId() {

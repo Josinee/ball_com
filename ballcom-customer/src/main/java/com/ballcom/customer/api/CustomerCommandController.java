@@ -14,7 +14,7 @@ import com.ballcom.customer.application.CustomerCommandHandler;
 import com.ballcom.customer.application.RegisterCustomerCommand;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerCommandController {
     private final CustomerCommandHandler commandHandler;
 

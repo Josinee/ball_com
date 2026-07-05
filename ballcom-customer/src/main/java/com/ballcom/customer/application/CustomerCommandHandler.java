@@ -27,7 +27,7 @@ public class CustomerCommandHandler {
         
         CustomerAggregate customer = CustomerAggregate.register(command.companyName(), command.firstName(), command.lastName(), phoneNumber, address);
 
-        eventStore.append(customer.getId(), customer.getUncommitedEvents(), customer.getSequenceNumber());
+        eventStore.append(customer.getId(), customer.getUncommitedEvents(), customer.getExpectedVersion());
         customer.clearUncommitedEvents();
 
         return customer.getId();

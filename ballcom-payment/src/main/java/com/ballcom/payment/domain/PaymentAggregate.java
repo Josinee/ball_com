@@ -10,9 +10,8 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
 
 public class PaymentAggregate extends AggregateRoot {
-    private UUID paymentId;
     private UUID customerId;
-    private UUID orderid;
+    private UUID orderId;
     private BigDecimal total;
     private PaymentMethod paymentMethod;
     private PaymentStatus status;
@@ -22,6 +21,7 @@ public class PaymentAggregate extends AggregateRoot {
     public static PaymentAggregate initiate(UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {
         PaymentAggregate payment = new PaymentAggregate();
         UUID paymentId = UUID.randomUUID();
+
         Map<String, Object> payload = Map.of(
             "customerId", customerId.toString(),
             "orderId", orderId.toString(),
@@ -32,7 +32,7 @@ public class PaymentAggregate extends AggregateRoot {
 
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),                        
-            paymentId,  
+            paymentId,
             payment.getSequenceNumber() + 1,
             EventType.PAYMENT_INITIATED,
             Instant.now(),
@@ -47,7 +47,7 @@ public class PaymentAggregate extends AggregateRoot {
 
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),                        
-            this.paymentId,  
+            this.getId(),  
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_AWAITING_DELIVERY,
             Instant.now(),
@@ -61,11 +61,13 @@ public class PaymentAggregate extends AggregateRoot {
 
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
-            this.id,
+            this.getId(),
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_COMPLETED,
             Instant.now(),
-            Map.of("status", "COMPLETED")
+            Map.of("status", "COMPLETED",
+                    "orderId", this.orderId.toString()
+            )
         );
 
         this.raiseEvent(event);
@@ -74,18 +76,13 @@ public class PaymentAggregate extends AggregateRoot {
     public void fail(String reason) {
         if (this.status == PaymentStatus.FAILED) return;
 
-        Map<String, Object> payload = Map.of(
-            "status", "FAILED",
-            "reason", reason
-        );
-
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
-            this.id,
+            this.getId(),
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_FAILED,
             Instant.now(),
-            payload
+            Map.of("status", "FAILED", "reason", reason)
         );
 
         this.raiseEvent(event);
@@ -94,28 +91,31 @@ public class PaymentAggregate extends AggregateRoot {
     @Override
     protected void apply(GenericDomainEvent event) {
         this.id = event.aggregateId();
-        this.paymentId = event.aggregateId();
         
         Map<String, Object> payload = event.payload();
 
         if (EventType.PAYMENT_INITIATED.equals(event.eventType())) {
             this.customerId = UUID.fromString((String) payload.get("customerId"));
-            this.orderid = UUID.fromString((String) payload.get("orderId"));
+            this.orderId = UUID.fromString((String) payload.get("orderId"));
             this.total = new BigDecimal((String) payload.get("total"));
             this.paymentMethod = PaymentMethod.valueOf((String) payload.get("paymentMethod"));
             this.status = PaymentStatus.INITIATED;
         } 
-        
+        else if (EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
+            this.status = PaymentStatus.PENDING_DELIVERY;
+        } 
         else if (EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
             this.status = PaymentStatus.COMPLETED;
         } 
-        
         else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
             this.status = PaymentStatus.FAILED;
         }
     
 
     }
+
+    public PaymentStatus getStatus() { return status; }
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
 
 
 }

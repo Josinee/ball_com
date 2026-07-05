@@ -35,6 +35,10 @@ public abstract class AggregateRoot {
             
         }
     }
+
+    public long getExpectedVersion() {
+        return this.sequenceNumber - this.uncommitedEvents.size();
+    }
     // elke aggregate implementeerd deze methode om zijn state bij te werken
     protected abstract void apply(GenericDomainEvent event);
 }
