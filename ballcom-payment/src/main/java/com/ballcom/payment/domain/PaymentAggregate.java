@@ -82,7 +82,7 @@ public class PaymentAggregate extends AggregateRoot {
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_FAILED,
             Instant.now(),
-            Map.of("status", "FAILED", "reason", reason)
+            Map.of("status", "FAILED", "orderId", this.orderId.toString(), "reason", reason)
         );
 
         this.raiseEvent(event);
