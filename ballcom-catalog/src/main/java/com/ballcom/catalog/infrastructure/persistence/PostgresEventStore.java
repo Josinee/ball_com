@@ -55,7 +55,7 @@ public class PostgresEventStore {
                     sql,
                     event.eventId(),
                     event.aggregateId(),
-                    "Customer",
+                    "Catalog",
                     sequence,
                     event.eventType().name(),
                     jsonPayload,

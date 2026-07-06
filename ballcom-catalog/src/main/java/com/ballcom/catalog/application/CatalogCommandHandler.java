@@ -1,8 +1,13 @@
 package com.ballcom.catalog.application;
 
+import java.util.UUID;
+
+
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shared.eventsourcing.EventStore;
+
+import com.ballcom.catalog.domain.CatalogAggregate;
 
 //TODO businessrules hier
 public class CatalogCommandHandler {
@@ -15,10 +20,12 @@ public class CatalogCommandHandler {
 
     @Transactional
     public UUID handle(CreateCatalogCommand command){
-        things
+         
+        CatalogAggregate catalog = CatalogAggregate.create(command.itemName(), command.price(), command.category(), command.description(), command.availability());
 
-        CatalogAggregate catalog = CatalogAggregate.create(command.productName(), command.);
+        eventStore.append(catalog.getId(), catalog.getUncommitedEvents(), 0);
+        catalog.clearUncommitedEvents();
 
-        eventStore.append(catalog.getId(), )
-    }
+        return catalog.getId();
+        }
 }

@@ -60,7 +60,7 @@ public class CatalogImportService {
                 for(CSVRecord record : csvParser) {
                     try {
                         String itemName = record.get("Item Name");
-                        Integer price = -1;
+                        String price = record.get("Price");
                         String description = record.get("Description");
                         String category = record.get("Category");
                         String availability = record.get("Availability");

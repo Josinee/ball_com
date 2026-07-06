@@ -1,6 +1,10 @@
 package com.ballcom.catalog.infrastructure.messaging;
 
-import java.security.Timestamp;
+import com.ballcom.shared.events.EventType;
+import com.ballcom.shared.events.GenericDomainEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,7 +41,7 @@ public class CatalogProjectionHandler {
 
                 UUID catalogId = event.aggregateId();
                 String itemName = (String) payload.get("itemName");
-                Integer price = (Integer) payload.get("price");
+                String price = (String) payload.get("price");
                 String description = (String) payload.get("description");
                 String category = (String) payload.get("category");
                 String availability = (String) payload.get("availability");
