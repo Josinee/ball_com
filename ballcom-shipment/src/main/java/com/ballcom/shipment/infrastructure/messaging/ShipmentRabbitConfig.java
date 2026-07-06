@@ -1,4 +1,4 @@
-package com.ballcom.shipment.infrastructure;
+package com.ballcom.shipment.infrastructure.messaging;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
