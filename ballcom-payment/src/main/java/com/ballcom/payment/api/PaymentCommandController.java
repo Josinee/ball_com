@@ -2,6 +2,7 @@ package com.ballcom.payment.api;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ballcom.payment.application.CompletePaymentCommand;
 import com.ballcom.payment.application.FailPaymentCommand;
 import com.ballcom.payment.application.PaymentCommandHandler;
+import com.ballcom.shared.ErrorResponse;
+
 
 
 
@@ -25,27 +28,42 @@ public class PaymentCommandController{
     }
 
     @PostMapping("pay/{orderId}")
-    public ResponseEntity<String> mockPayment(@PathVariable UUID orderId) {
-        if(orderId == null) {
-            throw new IllegalArgumentException("No order with orderId " + orderId + " found");
-        }
-        var command = new CompletePaymentCommand(orderId);
+    public ResponseEntity<?> mockPayment(@PathVariable UUID orderId) {
+        try {
 
-        commandHandler.handle(command);
-        return ResponseEntity.accepted().body("Payment made");
+            if(orderId == null) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "No order with orderId " + orderId + " found"));
+            }
+            var command = new CompletePaymentCommand(orderId);
+
+            commandHandler.handle(command);
+            return ResponseEntity.accepted().body("Payment made");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+        }
     }
 
     //ik kan niet bedenken hoe een betaling zou falen in deze context dus het moet handmatig
     @PostMapping("pay/{orderId}/fail")
-    public ResponseEntity<String> mockPaymentFailure(@PathVariable UUID orderId, @RequestParam(defaultValue = "INSUFFICIENT_FUNDS") String reason) {
-        
-        if(orderId == null) {
-            throw new IllegalArgumentException("No order with orderId " + orderId + " found");
+    public ResponseEntity<?> mockPaymentFailure(@PathVariable UUID orderId, @RequestParam String reason) {
+        try {
+            if (orderId == null) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "No order with orderId found because it is null"));
+            }
+                
+            var command = new FailPaymentCommand(orderId, reason);
+            commandHandler.handle(command);
+                
+            return ResponseEntity.accepted().body("Payment failed simulated with reason: " + reason);
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getLocalizedMessage()));
         }
         
-        var command = new FailPaymentCommand(orderId, reason);
-        commandHandler.handle(command);
-        
-        return ResponseEntity.accepted().body("Payment failed simulated with reason: " + reason);
     }
 }

@@ -42,9 +42,25 @@ public class PaymentAggregate extends AggregateRoot {
         return payment;
     }
 
-    public void holdForDelivery() {
-        if (this.status != PaymentStatus.INITIATED) return;
 
+
+
+    public void holdForDelivery() {
+        this.status.holdForDelivery(this);
+    }
+
+    public void complete() {
+        this.status.complete(this);
+    }
+
+    public void fail(String reason) {
+        this.status.fail(this, reason);
+    }
+
+
+
+
+    public void emitHoldForDelivery() {
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),                        
             this.getId(),  
@@ -56,9 +72,7 @@ public class PaymentAggregate extends AggregateRoot {
         this.raiseEvent(event);
     }
 
-    public void complete() {
-        if(this.status == PaymentStatus.COMPLETED) return;
-
+    public void emitComplete() {
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
             this.getId(),
@@ -73,9 +87,7 @@ public class PaymentAggregate extends AggregateRoot {
         this.raiseEvent(event);
     }
 
-    public void fail(String reason) {
-        if (this.status == PaymentStatus.FAILED) return;
-
+    public void emitFail(String reason) {
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
             this.getId(),
@@ -87,6 +99,7 @@ public class PaymentAggregate extends AggregateRoot {
 
         this.raiseEvent(event);
     }
+
 
     @Override
     public void apply(GenericDomainEvent event) {

@@ -1,17 +1,17 @@
 package com.ballcom.customer.api;
 
-import java.util.UUID;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.ballcom.customer.api.dto.CustomerRegisterRequest;
 import com.ballcom.customer.api.dto.CustomerRegisteredResponse;
 import com.ballcom.customer.application.CustomerCommandHandler;
 import com.ballcom.customer.application.RegisterCustomerCommand;
+import com.ballcom.shared.ErrorResponse;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/customers")
@@ -23,20 +23,30 @@ public class CustomerCommandController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerRegisteredResponse> registerCustomer(@RequestBody CustomerRegisterRequest request) {
+    public ResponseEntity<?> registerCustomer(@RequestBody CustomerRegisterRequest request) {
+        try {
+            if (request == null) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "Registration needs to contain companyname, name, phone number and address"));
+            }
 
-        var command = new RegisterCustomerCommand(
-                request.companyName(),
-                request.firstName(),
-                request.lastName(),
-                request.phoneNumber(),
-                request.street(),
-                request.houseNumber(),
-                request.city(),
-                request.zipCode()
-        );
-        
-        UUID customerId = commandHandler.handle(command);
-        return ResponseEntity.accepted().body(new CustomerRegisteredResponse(customerId));
+            var command = new RegisterCustomerCommand(
+                    request.companyName(),
+                    request.firstName(),
+                    request.lastName(),
+                    request.phoneNumber(),
+                    request.street(),
+                    request.houseNumber(),
+                    request.city(),
+                    request.zipCode()
+            );
+            
+            UUID customerId = commandHandler.handle(command);
+            return ResponseEntity.accepted().body(new CustomerRegisteredResponse(customerId));
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getLocalizedMessage()));
+        }
     }
 }
