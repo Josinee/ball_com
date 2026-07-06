@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ballcom-fulfillment</artifactId>
+    <artifactId>ballcom-shipment</artifactId>
 
     <dependencies>
         <dependency>

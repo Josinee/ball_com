@@ -12,7 +12,7 @@ import com.ballcom.shared.messaging.EventPublisher;
 public class RabbitEventPublisher implements EventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitEventPublisher(RabbitTemplate rabbitTemplate) {
+    public RabbitEventPublisher(RabbitTemplate rabbitTemplate) { 
         this.rabbitTemplate = rabbitTemplate;
     }
 

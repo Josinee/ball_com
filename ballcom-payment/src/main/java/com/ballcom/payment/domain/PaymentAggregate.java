@@ -10,7 +10,7 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
 
 public class PaymentAggregate extends AggregateRoot {
-    private UUID customerId;
+    private UUID customerId; 
     private UUID orderId;
     private BigDecimal total;
     private PaymentMethod paymentMethod;

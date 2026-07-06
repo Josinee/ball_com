@@ -1,0 +1,24 @@
+package com.ballcom.shipment.infrastructure;
+
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ShipmentRabbitConfig {
+
+    @Bean
+    public Queue paymentMadeQueue() {
+        return new Queue("shipping-payment-made-queue", true); 
+    }
+
+    @Bean
+    public TopicExchange paymentExchange() {
+        return new TopicExchange("payment.exchange", true, false);
+    }
+
+    @Bean
+    public Binding paymentMadeBinding(Queue paymentMadeQueue, TopicExchange paymentExchange) {
+        return BindingBuilder.bind(paymentMadeQueue).to(paymentExchange).with("payment.#");
+    }
+}

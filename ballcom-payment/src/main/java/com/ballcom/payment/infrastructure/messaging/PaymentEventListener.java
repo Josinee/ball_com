@@ -14,7 +14,7 @@ import com.ballcom.payment.application.PaymentCommandHandler;
 import com.ballcom.payment.application.ProcessPaymentCommand;
 import com.ballcom.payment.domain.PaymentMethod;
 import com.ballcom.shared.events.EventType;
-import com.ballcom.shared.events.GenericDomainEvent;
+import com.ballcom.shared.events.GenericDomainEvent; 
 
 @Component
 public class PaymentEventListener {

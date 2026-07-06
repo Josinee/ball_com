@@ -21,7 +21,7 @@
         <module>ballcom-ordering</module>
         <module>ballcom-payment</module>
         <module>ballcom-customer</module>
-        <module>ballcom-fulfillment</module>
+        <module>ballcom-shipment</module>
 
     </modules>
 
