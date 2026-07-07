@@ -69,10 +69,6 @@ public class ShipmentEventListener {
                 orderId
             );
 
-            
-
-            // shipment berekent goedkoopste carrier mock
-
 
            String viewSql = """
                 INSERT INTO shipment_views (shipment_id, order_id, carrier, shipping_price, status, updated_at)

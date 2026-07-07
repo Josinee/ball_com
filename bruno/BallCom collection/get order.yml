@@ -1,0 +1,33 @@
+info:
+  name: get order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/api/orders
+  body:
+    type: json
+    data: |-
+      {
+        "customerId": "a3b1c2d3-e4f5-6a7b-8c9d-0e1f2a3b4c5d",
+        "items": [
+          {
+            "productId": "99999999-ffff-ffff-ffff-999999999999",
+            "quantity": 2,
+            "unitPrice": 12.50
+          },
+          {
+            "productId": "88888888-eeee-eeee-eeee-888888888888",
+            "quantity": 1,
+            "unitPrice": 45.00
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

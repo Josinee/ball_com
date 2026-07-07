@@ -1,0 +1,7 @@
+info:
+  name: Prepay flow
+  type: folder
+  seq: 8
+
+request:
+  auth: inherit

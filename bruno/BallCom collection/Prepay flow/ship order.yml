@@ -1,0 +1,15 @@
+info:
+  name: ship order
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/shipments/bc7347a2-7db2-4ca3-9993-24838618e47c/ship
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

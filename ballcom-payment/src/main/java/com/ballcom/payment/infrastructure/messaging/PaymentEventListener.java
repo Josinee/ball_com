@@ -106,11 +106,6 @@ public class PaymentEventListener {
                 return;
             }
 
-            //als shippingcost calculated er al was zijn customerid en paymentmethod nog null
-            // if (updatedRow.get("customer_id") == null || updatedRow.get("payment_method") == null) {
-            //     System.out.println("PAYMENT: Verzendkosten opgeslagen, maar wacht nog op product- en klantgegevens van ORDER_PLACED...");
-            //     return; 
-            // }
             UUID customerId = (UUID) updatedRow.get("customer_id");
             BigDecimal finalTotal = (BigDecimal) updatedRow.get("total_amount");
 

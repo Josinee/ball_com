@@ -1,0 +1,15 @@
+info:
+  name: pay order
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/payments/pay/7ece7126-b0d1-45cb-8575-68dc5cbaf613
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

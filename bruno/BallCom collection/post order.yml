@@ -1,0 +1,29 @@
+info:
+  name: post order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/orders/placeorder
+  body:
+    type: json
+    data: |-
+      {
+        "customerId": "c3b07384-d113-49cd-a5d6-8ee000156789",
+        "paymentMethod": "PREPAY",
+        "items": [
+          { 
+            "productId": "a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1", 
+            "quantity": 1, 
+            "unitPrice": 15.50 
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,19 @@
+info:
+  name: pay fail
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://localhost:8080/payments/pay/7ebf1a6e-ef77-43f1-a9a1-3e5a5e43daa4/fail?reason=had ik zin in
+  params:
+    - name: reason
+      value: had ik zin in
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
