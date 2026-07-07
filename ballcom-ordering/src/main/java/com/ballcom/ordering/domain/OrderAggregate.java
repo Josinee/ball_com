@@ -13,17 +13,17 @@ import com.ballcom.shared.eventsourcing.AggregateRoot;
 public class OrderAggregate extends AggregateRoot {
 
     // Deze velden worden ingevuld DOOR het event in de apply-methode
-    private UUID id; 
     private UUID customerId;
     private List<OrderItem> items;
     private BigDecimal totalAmount;
-    private OrderStatus status;
+    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
 
     // Verplichte lege constructor voor JPA/Jackson/Frameworks
     public OrderAggregate() {}
 
     // De statische fabrieksmethode om een order te plaatsen
-    public static OrderAggregate place(UUID customerId, List<OrderItem> items) {
+    public static OrderAggregate place(UUID customerId, List<OrderItem> items, String paymentMethod) {
         // Business regels valideren
         if (items == null || items.isEmpty() || items.size() > 20) {
             throw new IllegalArgumentException("An order must contain between 1 and 20 items");
@@ -41,6 +41,7 @@ public class OrderAggregate extends AggregateRoot {
         Map<String, Object> payload = Map.of(
             "customerId", customerId.toString(), 
             "items", items, 
+            "paymentMethod", paymentMethod,
             "totalAmount", total.toString()
         );
 
@@ -66,7 +67,7 @@ public class OrderAggregate extends AggregateRoot {
     @Override
     protected void apply(GenericDomainEvent event) {
         if (EventType.ORDER_PLACED.equals(event.eventType())) {
-            this.id = event.aggregateId(); // Pak het ID uit de buitenkant van de enveloppe
+            this.id = event.aggregateId();
             
             Map<String, Object> data = event.payload();
             
@@ -74,15 +75,36 @@ public class OrderAggregate extends AggregateRoot {
             this.customerId = UUID.fromString((String) data.get("customerId"));
             this.items = (List<OrderItem>) data.get("items");
             this.totalAmount = new BigDecimal((String) data.get("totalAmount"));
-            this.status = OrderStatus.PLACED;
+            this.orderStatus = OrderStatus.PLACED;
+            this.paymentStatus = PaymentStatus.UNPAID;
         }
-        this.sequenceNumber = event.sequenceNumber();
+        else if (EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
+            this.paymentStatus = PaymentStatus.PAID;
+        }
     }
 
+
+    public void confirmPayment() {
+        if (this.orderStatus == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot confirm payment for a cancelled order");
+        }
+        if (this.paymentStatus == PaymentStatus.PAID) return;
+
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),
+            this.getId(), // Ons aggregate ID
+            this.getSequenceNumber() + 1, // Volgende versie
+            EventType.PAYMENT_COMPLETED, 
+            Instant.now(),
+            Map.of("paymentStatus", "PAID")
+        );
+        
+        this.raiseEvent(event); // Dit triggert apply() én zet hem in uncommitedEvents!
+    }
     // Getters
-    public UUID getId() { return id; }
-    public UUID getCustomerId() { return customerId; }
-    public List<OrderItem> getItems() { return items; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public OrderStatus getStatus() { return status; }
+    public UUID getId() { return this.id; }
+    public UUID getCustomerId() { return this.customerId; }
+    public List<OrderItem> getItems() { return this.items; }
+    public BigDecimal getTotalAmount() { return this.totalAmount; }
+
 }

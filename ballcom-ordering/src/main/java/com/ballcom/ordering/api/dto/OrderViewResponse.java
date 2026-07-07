@@ -10,5 +10,6 @@ public record OrderViewResponse(
     UUID orderId,
     UUID customerId,
     BigDecimal totalAmount,
-    String status
+    String order_status,
+    String payment_status
 ) {}

@@ -7,11 +7,13 @@ C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\Plac
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\OrderingApplication.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\PlaceOrderRequest.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\OrderQueryController.java
+C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\ConfirmOrderPaymentCommand.java
+C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\infrastructure\messaging\OrderEventListener.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\OrderViewResponse.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\OrderCommandHandler.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\OrderStatus.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\infrastructure\persistence\PostgresEventStore.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\infrastructure\messaging\RabbitEventPublisher.java
-C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\infrastructure\messaging\OrderProjectionHandler.java
+C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\PaymentStatus.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\OrderItem.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\OrderItemResponse.java

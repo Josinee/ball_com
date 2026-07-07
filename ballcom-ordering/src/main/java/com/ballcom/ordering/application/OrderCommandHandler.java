@@ -3,17 +3,18 @@ package com.ballcom.ordering.application;
 
 import com.ballcom.ordering.domain.OrderAggregate;
 import com.ballcom.ordering.domain.OrderItem;
-import com.ballcom.ordering.infrastructure.persistence.PostgresEventStore;
+import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 
-@Service
+@Component
 public class OrderCommandHandler {
     private final EventStore eventStore;
 
@@ -29,14 +30,30 @@ public class OrderCommandHandler {
             .toList();
 
         //omdat het een nieuwe order is, maakt hij een nieuwe OrderAggregate, aggregate slaat de event intern op
-        OrderAggregate order = OrderAggregate.place(command.customerId(), items);
+        OrderAggregate order = OrderAggregate.place(command.customerId(), items, command.paymentMethod());
 
 
         //sla event op in eventstore
-        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getSequenceNumber());
+        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
         //publiceer een message dat het event heeft plaatsgevonden
         order.clearUncommitedEvents();
         return order.getId();
+    }
+
+    @Transactional
+    public UUID handle(ConfirmOrderPaymentCommand command) {
+        //haal events op uit eventstore
+        List<GenericDomainEvent> history = eventStore.loadEvents(command.orderId());
+        // reconstruct aggregate uit de history
+        OrderAggregate order = new OrderAggregate();
+        order.loadFromHistory(history);
+
+        order.confirmPayment();
+        //sla nieuwe event van confirm payment op
+        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
+        order.clearUncommitedEvents();
+        return order.getId();
+
     }
     
 }

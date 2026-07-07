@@ -1,11 +1,15 @@
 package com.ballcom.customer.infrastructure.persistence;
 
+import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 import com.ballcom.shared.messaging.EventPublisher;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,10 +38,8 @@ public class PostgresEventStore implements EventStore {
                        List<GenericDomainEvent> events,
                        long expectedVersion) {
 
-        // 1. huidige versie ophalen
         long currentVersion = getCurrentVersion(aggregateId);
 
-        // 2. concurrency check
         if (currentVersion != expectedVersion) {
             throw new RuntimeException(
                 "Concurrency conflict: expected " + expectedVersion +
@@ -45,12 +47,7 @@ public class PostgresEventStore implements EventStore {
             );
         }
 
-        long sequence = expectedVersion;
-
         for (GenericDomainEvent event : events) {
-
-            sequence++;
-
             try {
                 String jsonPayload = objectMapper.writeValueAsString(event.payload());
 
@@ -64,7 +61,7 @@ public class PostgresEventStore implements EventStore {
                     event.eventId(),
                     event.aggregateId(),
                     "Customer",
-                    sequence,
+                    event.sequenceNumber(),
                     event.eventType().name(),
                     jsonPayload,
                     java.sql.Timestamp.from(event.occurredAt())
@@ -79,20 +76,44 @@ public class PostgresEventStore implements EventStore {
     }
 
 
+
     private long getCurrentVersion(UUID aggregateId) {
 
         Long version = jdbcTemplate.queryForObject(
-            "SELECT COALESCE(MAX(sequence_number), 0) FROM event_store WHERE aggregate_id = ?",
+            "SELECT MAX(sequence_number) FROM event_store WHERE aggregate_id = ?",
             Long.class,
             aggregateId
         );
 
-        return version != null ? version : 0;
+        return version != null ? version : -1;
     }
 
     @Override
     public List<GenericDomainEvent> loadEvents(UUID aggregateId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadEvents'");
+        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload " +
+                     "FROM event_store " + // Pas dit aan naar jouw tabelnaam, bijv. 'event_store' of 'events'
+                     "WHERE aggregate_id = ? " +
+                     "ORDER BY sequence_number ASC";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            try {
+                UUID eventId = UUID.fromString(rs.getString("id"));
+                UUID aggId = UUID.fromString(rs.getString("aggregate_id"));
+                String aggegateType = rs.getString("aggregate_type");//hardccoded welke aggregate het is?? customer?
+                long sequenceNumber = rs.getLong("sequence_number");
+                EventType eventType = EventType.valueOf(rs.getString("event_type"));
+                Instant occurredAt = rs.getTimestamp("occurred_at").toInstant();
+                
+                String payloadJson = rs.getString("payload");
+                Map<String, Object> payload = objectMapper.readValue(
+                    payloadJson, 
+                    new TypeReference<Map<String, Object>>() {}
+                );
+
+                return new GenericDomainEvent(eventId, aggId, sequenceNumber, eventType, occurredAt, payload);
+            } catch (Exception e) {
+                throw new RuntimeException("Fout bij het omzetten van database row naar GenericDomainEvent", e);
+            }
+        }, aggregateId.toString()); 
     }
 }

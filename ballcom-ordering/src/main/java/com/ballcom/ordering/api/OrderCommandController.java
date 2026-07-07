@@ -18,7 +18,7 @@ import java.util.UUID;
 //bouwt PlaceOrderCommand en geefft deze door aan OrderCommandHandler
 // geeft een HTTP 202 accepted met het nieuwe orderId. Doet niks met de database
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 public class OrderCommandController {
 
     private final OrderCommandHandler commandHandler;
@@ -28,14 +28,14 @@ public class OrderCommandController {
     }
 
 
-@PostMapping
+@PostMapping("placeorder")
 public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
     
     List<PlaceOrderCommand.OrderItemData> commandItems = request.items().stream()
             .map(i -> new PlaceOrderCommand.OrderItemData(i.productId(), i.quantity(), i.unitPrice()))
             .toList();
 
-    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems));
+    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems, request.paymentMethod()));
 
     return ResponseEntity.accepted()
             .location(URI.create("/orders/" + orderId))

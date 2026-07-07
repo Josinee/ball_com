@@ -23,7 +23,7 @@ public class OrderQueryController {
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderViewResponse> getOrderById(@PathVariable UUID orderId) {
-        String sql = "SELECT order_id, customer_id, total_amount, status FROM order_views WHERE order_id = ?";
+        String sql = "SELECT order_id, customer_id, total_amount, order_status, payment_status FROM order_views WHERE order_id = ?";
 
         try {
             OrderViewResponse orderView = jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
@@ -31,7 +31,8 @@ public class OrderQueryController {
                     UUID.fromString(rs.getString("order_id")),
                     UUID.fromString(rs.getString("customer_id")),
                     rs.getBigDecimal("total_amount"),
-                    rs.getString("status")
+                    rs.getString("order_status"),
+                    rs.getString("payment_status")
                 ), 
                 orderId
             );
