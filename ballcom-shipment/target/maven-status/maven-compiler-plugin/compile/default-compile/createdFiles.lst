@@ -1,0 +1,14 @@
+com\ballcom\shipment\application\OrderPickingCommand.class
+com\ballcom\shipment\application\ShipmentCommandHandler.class
+com\ballcom\shipment\infrastructure\persistence\PostgresEventStore.class
+com\ballcom\shipment\api\ShipmentCommandController.class
+com\ballcom\shipment\domain\ShipmentAggregate.class
+com\ballcom\shipment\infrastructure\messaging\ShipmentRabbitConfig.class
+com\ballcom\shipment\infrastructure\persistence\PostgresEventStore$1.class
+com\ballcom\shipment\infrastructure\messaging\ShipmentEventListener.class
+com\ballcom\shipment\infrastructure\messaging\ShipmentEventPublisher.class
+com\ballcom\shipment\application\DeliverPackageCommand.class
+com\ballcom\shipment\application\ShipPackageCommand.class
+com\ballcom\shipment\application\InitiateShipmentCommand.class
+com\ballcom\shipment\domain\ShipmentStatus.class
+com\ballcom\shipment\ShipmentApplication.class

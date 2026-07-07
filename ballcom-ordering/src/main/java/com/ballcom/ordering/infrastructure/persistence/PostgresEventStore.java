@@ -109,5 +109,6 @@ public class PostgresEventStore implements EventStore {
             }
         }, aggregateId.toString());
     }
+
     
 }

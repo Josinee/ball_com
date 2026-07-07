@@ -1,20 +1,25 @@
 package com.ballcom.payment.application;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.ballcom.payment.domain.PaymentAggregate;
 import com.ballcom.payment.domain.PaymentMethod;
-import com.ballcom.payment.infrastructure.persistence.PostgresEventStore;
+import com.ballcom.payment.domain.PaymentStatus;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class PaymentCommandHandler {
     private final EventStore eventStore;
+    private JdbcTemplate jdbcTemplate;
 
-    public PaymentCommandHandler(EventStore eventStore) {
+    public PaymentCommandHandler(EventStore eventStore, JdbcTemplate jdbcTemplate) {
         this.eventStore = eventStore;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -31,8 +36,9 @@ public class PaymentCommandHandler {
         // 1. Initialiseer de betaling (Status wordt INITIATED)
         // We gebruiken command.orderId() als de unieke sleutel (Aggregate ID)
         PaymentAggregate payment = PaymentAggregate.initiate(
-            command.customerId(), 
+            command.paymentId(),
             command.orderId(), 
+            command.customerId(), 
             command.total(), 
             command.paymentMethod()
         );
@@ -57,17 +63,27 @@ public class PaymentCommandHandler {
      */
     @Transactional
     public void handle(CompletePaymentCommand command) {
-        // 1. Haal de geschiedenis op via de orderId (de database zoekt nu zelf de juiste paymentId erbij)
-        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
+        // 1. Zoek de actieve betaling op basis van de ORDER ID uit het command
+        String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
+        UUID paymentId;
+        try {
+            paymentId = jdbcTemplate.queryForObject(lookupSql, UUID.class, command.orderId());
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            throw new RuntimeException("Kan betaling niet afronden: Geen actieve betaling gevonden voor orderId: " + command.orderId());
+        }
         
-        // 2. Breng aggregate tot leven
+        // 2. Laad de historie uit de event store op basis van de gevonden paymentId
+        List<GenericDomainEvent> history = eventStore.loadEvents(paymentId); 
+        
         PaymentAggregate payment = new PaymentAggregate();
         payment.loadFromHistory(history);
 
-        // 3. Status naar COMPLETED
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
+            return;
+        }
+
         payment.complete();
 
-        // 4. Sla het PAYMENT_COMPLETED event op
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
     }
@@ -79,8 +95,15 @@ public class PaymentCommandHandler {
      */
     @Transactional
     public void handle(FailPaymentCommand command) {
-        // 1. Reconstitueer de betaling uit de Event Store
-        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
+        String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
+        UUID paymentId;
+        try {
+            paymentId = jdbcTemplate.queryForObject(lookupSql, UUID.class, command.orderId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new RuntimeException("Kan betaling niet afronden: Geen actieve betaling gevonden voor orderId: " + command.orderId());
+        }
+
+        List<GenericDomainEvent> history = eventStore.loadEvents(paymentId);
         PaymentAggregate payment = new PaymentAggregate();
         
         payment.loadFromHistory(history);

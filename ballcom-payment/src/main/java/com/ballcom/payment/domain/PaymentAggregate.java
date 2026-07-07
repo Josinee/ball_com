@@ -10,7 +10,7 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.AggregateRoot;
 
 public class PaymentAggregate extends AggregateRoot {
-    private UUID customerId;
+    private UUID customerId; 
     private UUID orderId;
     private BigDecimal total;
     private PaymentMethod paymentMethod;
@@ -18,13 +18,13 @@ public class PaymentAggregate extends AggregateRoot {
 
     public PaymentAggregate() {}
 
-    public static PaymentAggregate initiate(UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {
+    public static PaymentAggregate initiate(UUID paymentId, UUID orderId, UUID customerId, BigDecimal total, PaymentMethod paymentMethod) {
         PaymentAggregate payment = new PaymentAggregate();
-        UUID paymentId = UUID.randomUUID();
+        payment.id = paymentId;
 
         Map<String, Object> payload = Map.of(
-            "customerId", customerId.toString(),
             "orderId", orderId.toString(),
+            "customerId", customerId.toString(),
             "total", total.toString(),
             "paymentMethod", paymentMethod.name(),
             "status", "INITIATED"
@@ -42,40 +42,60 @@ public class PaymentAggregate extends AggregateRoot {
         return payment;
     }
 
-    public void holdForDelivery() {
-        if (this.status != PaymentStatus.INITIATED) return;
 
-        GenericDomainEvent event = new GenericDomainEvent(
-            UUID.randomUUID(),                        
-            this.getId(),  
-            this.getSequenceNumber() + 1,
-            EventType.PAYMENT_AWAITING_DELIVERY,
-            Instant.now(),
-            Map.of("status", "PENDING_DELIVERY")
-        );
-        this.raiseEvent(event);
+
+
+    public void holdForDelivery() {
+        if(this.status == PaymentStatus.PENDING_DELIVERY) return;
+        this.emitHoldForDelivery();
     }
 
     public void complete() {
         if(this.status == PaymentStatus.COMPLETED) return;
+        this.emitComplete();
+    }
 
+    public void fail(String reason) {
+        if(this.status == PaymentStatus.FAILED) return;
+        this.emitFail(reason);
+    }
+
+
+
+
+    public void emitHoldForDelivery() {
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(),
+            this.getId(),
+            this.getSequenceNumber() + 1,
+            EventType.PAYMENT_AWAITING_DELIVERY,
+            Instant.now(),
+            Map.of(
+                "status", "PENDING_DELIVERY",
+                "orderId", this.orderId.toString(),
+                "paymentMethod", this.paymentMethod.name()
+            )
+        );
+        this.raiseEvent(event);
+    }
+
+    public void emitComplete() {
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
             this.getId(),
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_COMPLETED,
             Instant.now(),
-            Map.of("status", "COMPLETED",
-                    "orderId", this.orderId.toString()
+            Map.of(
+                "status", "COMPLETED",
+                "orderId", this.orderId.toString(),
+                "paymentMethod", this.paymentMethod.name()
             )
         );
-
         this.raiseEvent(event);
     }
 
-    public void fail(String reason) {
-        if (this.status == PaymentStatus.FAILED) return;
-
+    public void emitFail(String reason) {
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(),
             this.getId(),
@@ -87,6 +107,7 @@ public class PaymentAggregate extends AggregateRoot {
 
         this.raiseEvent(event);
     }
+
 
     @Override
     public void apply(GenericDomainEvent event) {

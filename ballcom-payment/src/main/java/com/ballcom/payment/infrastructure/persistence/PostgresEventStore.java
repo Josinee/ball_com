@@ -66,17 +66,6 @@ public class PostgresEventStore implements EventStore {
         }
     }
 
-    public List<GenericDomainEvent> loadEventsByOrderId(UUID orderId) {
-        String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
-        
-        List<UUID> paymentIds = jdbcTemplate.query(lookupSql, (rs, rowNum) -> rs.getObject("payment_id", UUID.class), orderId);
-        
-        if (paymentIds.isEmpty()) {
-            throw new RuntimeException("Geen betaling gevonden voor orderId: " + orderId);
-        }
-
-        return loadEvents(paymentIds.get(0));
-    }
 
     private long getCurrentVersion(UUID aggregateId) {
         Long version = jdbcTemplate.queryForObject(

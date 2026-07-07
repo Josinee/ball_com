@@ -4,8 +4,9 @@ import com.ballcom.ordering.api.dto.OrderAcceptedResponse;
 import com.ballcom.ordering.api.dto.PlaceOrderRequest;
 import com.ballcom.ordering.application.OrderCommandHandler;
 import com.ballcom.ordering.application.PlaceOrderCommand;
+import com.ballcom.shared.ErrorResponse;
 
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,17 +29,24 @@ public class OrderCommandController {
     }
 
 
-@PostMapping("placeorder")
-public ResponseEntity<OrderAcceptedResponse> placeOrder(@RequestBody PlaceOrderRequest request) {
-    
-    List<PlaceOrderCommand.OrderItemData> commandItems = request.items().stream()
-            .map(i -> new PlaceOrderCommand.OrderItemData(i.productId(), i.quantity(), i.unitPrice()))
-            .toList();
+    @PostMapping("placeorder")
+    public ResponseEntity<?> placeOrder(@RequestBody PlaceOrderRequest request) {
+        try {
+            if (request == null || request.items() == null || request.items().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "Order has to consist of at least 1 product"));
+            }
+            List<PlaceOrderCommand.OrderItemData> commandItems = request.items().stream()
+                    .map(i -> new PlaceOrderCommand.OrderItemData(i.productId(), i.quantity(), i.unitPrice())).toList();
 
-    UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems, request.paymentMethod()));
+            UUID orderId = commandHandler.handle(new PlaceOrderCommand(request.customerId(), commandItems, request.paymentMethod()));
 
-    return ResponseEntity.accepted()
-            .location(URI.create("/orders/" + orderId))
-            .body(new OrderAcceptedResponse(orderId));
-}
+            return ResponseEntity.accepted().location(URI.create("/orders/" + orderId)).body(new OrderAcceptedResponse(orderId));
+
+        } catch (IllegalStateException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getLocalizedMessage()));
+        }
+    }
 }

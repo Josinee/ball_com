@@ -24,7 +24,7 @@ public class OrderRabbitConfig {
     }
 
     @Bean
-    public Binding orderBinding(Queue orderQueue, TopicExchange orderExchange) { //TODO wat is dit wat doet het
+    public Binding orderBinding(Queue orderQueue, TopicExchange orderExchange) {
         return BindingBuilder.bind(orderQueue).to(orderExchange).with("order.#");
     }
 

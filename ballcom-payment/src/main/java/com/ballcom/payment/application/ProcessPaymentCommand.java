@@ -5,4 +5,4 @@ import java.util.UUID;
 
 import com.ballcom.payment.domain.PaymentMethod;
 
-public record ProcessPaymentCommand(UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {}
+public record ProcessPaymentCommand(UUID paymentId, UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {}
