@@ -1,0 +1,42 @@
+Item Name,Price,Description,Category,Availability
+Wireless Mouse,25,Ergonomic wireless mouse with USB receiver,Electronics,true
+Bluetooth Speaker,45,Portable speaker with rich sound,Electronics,true
+Coffee Mug,8,Ceramic mug for hot beverages,Kitchen,true
+Notebook,5,Lined notebook for notes and journaling,Office,true
+Mechanical Keyboard,75,RGB backlit mechanical keyboard,Electronics,true
+Water Bottle,15,Reusable stainless steel water bottle,Fitness,true
+Running Shoes,80,Comfortable shoes for daily running,Fitness,true
+Yoga Mat,20,Non-slip exercise mat,Fitness,true
+Desk Lamp,30,LED desk lamp with adjustable brightness,Home,true
+Phone Charger,18,Fast charging USB-C wall charger,Electronics,true
+Power Bank,35,10000mAh portable battery pack,Electronics,true
+Gaming Headset,60,Surround sound headset with microphone,Electronics,true
+Smart Watch,150,Fitness tracking smartwatch,Electronics,true
+Cookware Set,95,10-piece non-stick cookware set,Kitchen,true
+Pillow,22,Soft memory foam sleeping pillow,Home,true
+Blanket,35,Warm fleece blanket for all seasons,Home,true
+Electric Kettle,40,1.7L fast boiling electric kettle,Kitchen,true
+Toaster,28,Two-slice stainless steel toaster,Kitchen,true
+Air Fryer,120,Healthy cooking with little oil,Kitchen,true
+Vacuum Cleaner,180,Powerful bagless vacuum cleaner,Home,true
+Wall Clock,22,Modern silent wall clock,Home,true
+Picture Frame,16,Wooden frame for photos,Home,true
+USB Flash Drive,12,64GB high-speed storage device,Electronics,true
+External Hard Drive,85,2TB portable backup drive,Electronics,true
+Wireless Earbuds,70,Noise-isolating Bluetooth earbuds,Electronics,true
+Fitness Tracker,55,Track steps heart rate and sleep,Fitness,true
+Action Camera,210,4K waterproof action camera,Electronics,false
+Camping Tent,130,Four-person waterproof camping tent,Outdoor,true
+Sleeping Bag,50,Warm sleeping bag for camping,Outdoor,true
+Flashlight,15,Rechargeable LED flashlight,Outdoor,true
+Office Chair,140,Ergonomic chair with lumbar support,Furniture,true
+Standing Desk,320,Height adjustable standing desk,Furniture,false
+Bookshelf,90,Five-tier wooden bookshelf,Furniture,true
+Hair Dryer,35,Compact hair dryer with multiple settings,Beauty,true
+Shampoo Set,18,Nourishing shampoo and conditioner,Beauty,true
+Perfume,55,Fresh long-lasting fragrance,Beauty,true
+Lip Balm,4,Moisturizing lip care stick,Beauty,true
+Face Cream,24,Hydrating daily moisturizer,Beauty,true
+Pet Bed,45,Soft comfortable bed for pets,Pet Supplies,true
+Dog Leash,15,Durable adjustable dog leash,Pet Supplies,true
+Cat Toy,8,Interactive toy for indoor cats,Pet Supplies,true
