@@ -1,6 +1,7 @@
-com\ballcom\shared\messaging\EventPublisher.class
 com\ballcom\shared\events\EventType.class
-com\ballcom\shared\messaging\RabbitConfig.class
 com\ballcom\shared\eventsourcing\AggregateRoot.class
-com\ballcom\shared\events\GenericDomainEvent.class
 com\ballcom\shared\eventsourcing\EventStore.class
+com\ballcom\shared\messaging\EventPublisher.class
+com\ballcom\shared\ErrorResponse.class
+com\ballcom\shared\messaging\RabbitConfig.class
+com\ballcom\shared\events\GenericDomainEvent.class

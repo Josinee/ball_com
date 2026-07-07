@@ -9,10 +9,10 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.messaging.EventPublisher;
 
 @Component
-public class RabbitEventPublisher implements EventPublisher {
+public class PaymentEventPublisher implements EventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitEventPublisher(RabbitTemplate rabbitTemplate) { 
+    public PaymentEventPublisher(RabbitTemplate rabbitTemplate) { 
         this.rabbitTemplate = rabbitTemplate;
     }
 

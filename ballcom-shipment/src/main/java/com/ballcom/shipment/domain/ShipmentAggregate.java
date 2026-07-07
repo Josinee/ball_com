@@ -17,46 +17,34 @@ public class ShipmentAggregate extends AggregateRoot {
 
     public ShipmentAggregate() {}
 
-    public static ShipmentAggregate initiateForAfterPay(UUID orderId) {
+    public static ShipmentAggregate initiate(UUID orderId, String carrier, double shippingPrice) {
         ShipmentAggregate shipment = new ShipmentAggregate();
         UUID shipmentId = UUID.randomUUID();
 
         Map<String, Object> payload = Map.of(
             "orderId", orderId.toString(),
-            "status", "PICKING"
-        );
-
-        GenericDomainEvent event = new GenericDomainEvent(
-            UUID.randomUUID(),
-            shipmentId,
-            shipment.getSequenceNumber() + 1,
-            EventType.ORDER_PICKED,
-            Instant.now(),
-            payload
-        );
-
-        shipment.raiseEvent(event);
-        return shipment;
-    }
-
-    public static ShipmentAggregate initiateForPrePay(UUID orderId, String carrier, double shippingPrice) {
-        ShipmentAggregate shipment = new ShipmentAggregate();
-        UUID shipmentId = UUID.randomUUID();
-
-        Map<String, Object> payload = Map.of(
-            "orderId", orderId.toString(),
-            "status", "PICKING",
+            "status", "PENDING_PAYMENT", // Wacht op groen licht van Payment
             "carrier", carrier,
             "shippingPrice", String.valueOf(shippingPrice)
         );
 
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(), shipmentId, shipment.getSequenceNumber() + 1,
-            EventType.ORDER_PICKED, Instant.now(), payload
+            EventType.SHIPPING_COSTS_CALCULATED, Instant.now(), payload
         );
         shipment.raiseEvent(event);
         return shipment;
     }
+
+    public void releaseToWarehouse() {
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(), this.getId(), this.getSequenceNumber() + 1,
+            EventType.ORDER_PICKED, Instant.now(),
+            Map.of("orderId", this.orderId.toString(), "status", "PICKING")
+        );
+        this.raiseEvent(event);
+    }
+    
 
     public void markAsShipped(String carrier, double shippingPrice) {
         if (this.status != ShipmentStatus.PICKING) {
@@ -112,8 +100,14 @@ public class ShipmentAggregate extends AggregateRoot {
     public void apply(GenericDomainEvent event) {
         this.id = event.aggregateId();
         Map<String, Object> payload = event.payload();
-
-        if (EventType.ORDER_PICKED.equals(event.eventType())) {
+        
+        if (EventType.SHIPPING_COSTS_CALCULATED.equals(event.eventType())) {
+            this.orderId = UUID.fromString((String) payload.get("orderId"));
+            this.carrier = (String) payload.get("carrier");
+            this.shippingPrice = Double.parseDouble((String) payload.get("shippingPrice"));
+            this.status = ShipmentStatus.PENDING_PAYMENT;
+        } 
+        else if (EventType.ORDER_PICKED.equals(event.eventType())) {
             this.orderId = UUID.fromString((String) payload.get("orderId"));
             this.status = ShipmentStatus.PICKING;
         } 

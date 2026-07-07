@@ -66,7 +66,7 @@ public class PostgresEventStore implements EventStore {
         }
     }
 
-    public List<GenericDomainEvent> loadEventsByOrderId(UUID orderId) {
+    public List<GenericDomainEvent> loadEventsById(UUID orderId) {
         String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
         
         List<UUID> paymentIds = jdbcTemplate.query(lookupSql, (rs, rowNum) -> rs.getObject("payment_id", UUID.class), orderId);

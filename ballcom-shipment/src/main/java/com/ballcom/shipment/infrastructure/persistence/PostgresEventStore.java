@@ -60,8 +60,8 @@ public class PostgresEventStore implements EventStore {
         }
     }
 
-    public List<GenericDomainEvent> loadEventsByOrderId(UUID orderId) {
-        String lookupSql = "SELECT shipment_id FROM shipment_views WHERE shipment_id = ?";
+    public List<GenericDomainEvent> loadEventsById(UUID orderId) {
+        String lookupSql = "SELECT shipment_id FROM shipment_views WHERE order_id = ?";
         
         List<UUID> shipmentIds = jdbcTemplate.query(lookupSql, (rs, rowNum) -> rs.getObject("shipment_id", UUID.class), orderId);
         
@@ -104,6 +104,8 @@ public class PostgresEventStore implements EventStore {
             }
         }, aggregateId);
     }
+
+
 
 
 

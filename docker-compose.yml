@@ -13,7 +13,20 @@ services:
       - ordering_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/ordering:/docker-entrypoint-initdb.d
 
-  # Database voor de Payment service
+
+  postgres-shipment:
+    image: postgres:16
+    container_name: postgres-shipment
+    environment:
+      POSTGRES_DB: shipment_db
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5457:5432"
+    volumes:
+      - shipment_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/shipment:/docker-entrypoint-initdb.d
+
   postgres-payment:
     image: postgres:16
     container_name: postgres-payment
@@ -26,6 +39,7 @@ services:
     volumes:
       - payment_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/payment:/docker-entrypoint-initdb.d
+
 
   # 2. De Message Broker
   rabbitmq:
@@ -51,3 +65,4 @@ services:
 volumes:
   ordering_postgres_data:
   payment_postgres_data:
+  shipment_postgres_data:

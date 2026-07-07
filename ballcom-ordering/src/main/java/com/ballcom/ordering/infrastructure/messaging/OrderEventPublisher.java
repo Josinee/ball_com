@@ -9,14 +9,15 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.messaging.EventPublisher;
 
 @Component
-public class RabbitEventPublisher implements EventPublisher {
+public class OrderEventPublisher implements EventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitEventPublisher(RabbitTemplate rabbitTemplate) {
+    public OrderEventPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
     // wacht tot de database commit klaar is, stuurt daarna pas naar rabbit
+
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publish(GenericDomainEvent event) {
         // genereert specifieke routing key

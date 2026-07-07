@@ -62,12 +62,16 @@ public class PaymentAggregate extends AggregateRoot {
 
     public void emitHoldForDelivery() {
         GenericDomainEvent event = new GenericDomainEvent(
-            UUID.randomUUID(),                        
-            this.getId(),  
+            UUID.randomUUID(),
+            this.getId(),
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_AWAITING_DELIVERY,
             Instant.now(),
-            Map.of("status", "PENDING_DELIVERY")
+            Map.of(
+                "status", "PENDING_DELIVERY",
+                "orderId", this.orderId.toString(),
+                "paymentMethod", this.paymentMethod.name()
+            )
         );
         this.raiseEvent(event);
     }
@@ -79,11 +83,12 @@ public class PaymentAggregate extends AggregateRoot {
             this.getSequenceNumber() + 1,
             EventType.PAYMENT_COMPLETED,
             Instant.now(),
-            Map.of("status", "COMPLETED",
-                    "orderId", this.orderId.toString()
+            Map.of(
+                "status", "COMPLETED",
+                "orderId", this.orderId.toString(),
+                "paymentMethod", this.paymentMethod.name()
             )
         );
-
         this.raiseEvent(event);
     }
 

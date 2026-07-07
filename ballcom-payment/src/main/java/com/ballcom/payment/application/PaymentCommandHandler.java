@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.ballcom.payment.domain.PaymentAggregate;
 import com.ballcom.payment.domain.PaymentMethod;
+import com.ballcom.payment.domain.PaymentStatus;
 import com.ballcom.payment.infrastructure.persistence.PostgresEventStore;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
@@ -58,11 +59,15 @@ public class PaymentCommandHandler {
     @Transactional
     public void handle(CompletePaymentCommand command) {
         // 1. Haal de geschiedenis op via de orderId (de database zoekt nu zelf de juiste paymentId erbij)
-        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
+        List<GenericDomainEvent> history = eventStore.loadEventsById(command.orderId());
         
         // 2. Breng aggregate tot leven
         PaymentAggregate payment = new PaymentAggregate();
         payment.loadFromHistory(history);
+
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
+            return;
+        }
 
         // 3. Status naar COMPLETED
         payment.complete();
@@ -80,7 +85,7 @@ public class PaymentCommandHandler {
     @Transactional
     public void handle(FailPaymentCommand command) {
         // 1. Reconstitueer de betaling uit de Event Store
-        List<GenericDomainEvent> history = ((PostgresEventStore) eventStore).loadEventsByOrderId(command.orderId());
+        List<GenericDomainEvent> history = eventStore.loadEventsById(command.orderId());
         PaymentAggregate payment = new PaymentAggregate();
         
         payment.loadFromHistory(history);

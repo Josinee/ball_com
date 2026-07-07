@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS shipment_views (
     shipment_id UUID PRIMARY KEY,
     order_id UUID NOT NULL,
     carrier VARCHAR(25),
-    shipping_price INT
+    shipping_price INT,
     status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 )

@@ -109,5 +109,11 @@ public class PostgresEventStore implements EventStore {
             }
         }, aggregateId.toString());
     }
+
+    @Override
+    public List<GenericDomainEvent> loadEventsById(UUID id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'loadEventsById'");
+    }
     
 }

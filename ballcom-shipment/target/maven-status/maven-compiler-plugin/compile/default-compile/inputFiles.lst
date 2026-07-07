@@ -1,2 +1,12 @@
-C:\dev\ball_com\ballcom-fulfillment\src\main\java\com\ballcom\fulfillment\infrastructure\FulfillmentRabbitConfig.java
-C:\dev\ball_com\ballcom-fulfillment\src\main\java\com\ballcom\fulfillment\infrastructure\OrderPlacedListener.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\infrastructure\messaging\ShipmentEventListener.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\infrastructure\messaging\ShipmentRabbitConfig.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\ShipPackageCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\domain\ShipmentAggregate.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\DeliverPackageCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\ShipmentCommandHandler.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\infrastructure\messaging\ShipmentEventPublisher.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\infrastructure\persistence\PostgresEventStore.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\ShipmentApplication.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\InitiateShipmentCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\OrderPickingCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\domain\ShipmentStatus.java
