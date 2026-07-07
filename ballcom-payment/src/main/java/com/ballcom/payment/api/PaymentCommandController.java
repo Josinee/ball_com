@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,26 +23,32 @@ import com.ballcom.shared.ErrorResponse;
 @RequestMapping("/payments")
 public class PaymentCommandController{
     private final PaymentCommandHandler commandHandler;
+    private JdbcTemplate jdbcTemplate;
 
-    public PaymentCommandController(PaymentCommandHandler commandHandler) {
+    public PaymentCommandController(PaymentCommandHandler commandHandler, JdbcTemplate jdbcTemplate) {
         this.commandHandler = commandHandler;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @PostMapping("pay/{orderId}")
     public ResponseEntity<?> mockPayment(@PathVariable UUID orderId) {
         try {
-
-            if(orderId == null) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "No order with orderId " + orderId + " found"));
+            if (orderId == null) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(new ErrorResponse(422, "No order with orderId " + orderId + " found"));
             }
+            
             var command = new CompletePaymentCommand(orderId);
 
             commandHandler.handle(command);
             return ResponseEntity.accepted().body("Payment made");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+            
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ErrorResponse(422, e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
         }
     }
 
@@ -52,8 +59,13 @@ public class PaymentCommandController{
             if (orderId == null) {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(422, "No order with orderId found because it is null"));
             }
+            UUID paymentId = jdbcTemplate.queryForObject(
+                "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?", 
+                UUID.class, 
+                orderId
+            );
                 
-            var command = new FailPaymentCommand(orderId, reason);
+            var command = new FailPaymentCommand(paymentId, reason);
             commandHandler.handle(command);
                 
             return ResponseEntity.accepted().body("Payment failed simulated with reason: " + reason);

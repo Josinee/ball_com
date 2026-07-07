@@ -27,7 +27,7 @@ public class ShipmentEventPublisher implements EventPublisher{
         String routingKey = "shipping." + event.eventType().name().toLowerCase().replace("_", ".");
         try {
             rabbitTemplate.convertAndSend("shipping.exchange", routingKey, event);
-            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "order.placed");
+            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "shipping." + event.eventType().name().toLowerCase().replace("_", "."));
         } catch (Exception e) {
             System.err.println("RABBITMQ FOUT: Verzenden mislukt! " + e.getMessage());
         }

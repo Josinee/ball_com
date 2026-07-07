@@ -8,7 +8,5 @@ import com.ballcom.shared.events.GenericDomainEvent;
 public interface EventStore {
     void append(UUID aggregateId, List<GenericDomainEvent> events, long sequenceNumber);
     List<GenericDomainEvent> loadEvents(UUID aggregateId);
-    List<GenericDomainEvent> loadEventsById(UUID id);
-
     
 }

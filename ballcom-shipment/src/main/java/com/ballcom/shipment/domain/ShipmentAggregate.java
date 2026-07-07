@@ -17,9 +17,9 @@ public class ShipmentAggregate extends AggregateRoot {
 
     public ShipmentAggregate() {}
 
-    public static ShipmentAggregate initiate(UUID orderId, String carrier, double shippingPrice) {
+    public static ShipmentAggregate initiate(UUID shipmentId, UUID orderId, String carrier, double shippingPrice) {
         ShipmentAggregate shipment = new ShipmentAggregate();
-        UUID shipmentId = UUID.randomUUID();
+        shipment.id = shipmentId;
 
         Map<String, Object> payload = Map.of(
             "orderId", orderId.toString(),
@@ -30,7 +30,7 @@ public class ShipmentAggregate extends AggregateRoot {
 
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(), shipmentId, shipment.getSequenceNumber() + 1,
-            EventType.SHIPPING_COSTS_CALCULATED, Instant.now(), payload
+            EventType.COSTS_CALCULATED, Instant.now(), payload
         );
         shipment.raiseEvent(event);
         return shipment;
@@ -101,24 +101,39 @@ public class ShipmentAggregate extends AggregateRoot {
         this.id = event.aggregateId();
         Map<String, Object> payload = event.payload();
         
-        if (EventType.SHIPPING_COSTS_CALCULATED.equals(event.eventType())) {
+        if (EventType.COSTS_CALCULATED.equals(event.eventType())) {
             this.orderId = UUID.fromString((String) payload.get("orderId"));
             this.carrier = (String) payload.get("carrier");
             this.shippingPrice = Double.parseDouble((String) payload.get("shippingPrice"));
             this.status = ShipmentStatus.PENDING_PAYMENT;
         } 
         else if (EventType.ORDER_PICKED.equals(event.eventType())) {
-            this.orderId = UUID.fromString((String) payload.get("orderId"));
             this.status = ShipmentStatus.PICKING;
         } 
         else if (EventType.PACKAGE_SHIPPED.equals(event.eventType())) {
-            this.carrier = (String) payload.get("carrier");
-            this.shippingPrice = Double.parseDouble((String) payload.get("shippingPrice"));
+            if (payload.containsKey("carrier")) {
+                this.carrier = (String) payload.get("carrier");
+            }
+            if (payload.containsKey("shippingPrice")) {
+                this.shippingPrice = Double.parseDouble(String.valueOf(payload.get("shippingPrice")));
+            }
             this.status = ShipmentStatus.SHIPPED;
         } 
         else if (EventType.PACKAGE_DELIVERED.equals(event.eventType())) {
             this.status = ShipmentStatus.DELIVERED;
         }
+    }
+
+    public void setId(UUID newId) {
+        this.id = newId;
+    }
+
+    public String getCarrier() {
+        return carrier;
+    }
+
+    public double getShippingPrice() {
+        return shippingPrice;
     }
     
 }

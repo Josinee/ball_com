@@ -59,7 +59,7 @@ public class ShipmentRabbitConfig {
 
     @Bean
     public Binding deliveryBinding(Queue deliveryQueue, TopicExchange shippingExchange) {
-        return BindingBuilder.bind(deliveryQueue).to(shippingExchange).with("shipping.package.delivered");
+        return BindingBuilder.bind(deliveryQueue).to(shippingExchange).with("shipping.package.#");
     }
 
 }

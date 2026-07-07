@@ -18,13 +18,13 @@ public class PaymentAggregate extends AggregateRoot {
 
     public PaymentAggregate() {}
 
-    public static PaymentAggregate initiate(UUID customerId, UUID orderId, BigDecimal total, PaymentMethod paymentMethod) {
+    public static PaymentAggregate initiate(UUID paymentId, UUID orderId, UUID customerId, BigDecimal total, PaymentMethod paymentMethod) {
         PaymentAggregate payment = new PaymentAggregate();
-        UUID paymentId = UUID.randomUUID();
+        payment.id = paymentId;
 
         Map<String, Object> payload = Map.of(
-            "customerId", customerId.toString(),
             "orderId", orderId.toString(),
+            "customerId", customerId.toString(),
             "total", total.toString(),
             "paymentMethod", paymentMethod.name(),
             "status", "INITIATED"
@@ -46,15 +46,18 @@ public class PaymentAggregate extends AggregateRoot {
 
 
     public void holdForDelivery() {
-        this.status.holdForDelivery(this);
+        if(this.status == PaymentStatus.PENDING_DELIVERY) return;
+        this.emitHoldForDelivery();
     }
 
     public void complete() {
-        this.status.complete(this);
+        if(this.status == PaymentStatus.COMPLETED) return;
+        this.emitComplete();
     }
 
     public void fail(String reason) {
-        this.status.fail(this, reason);
+        if(this.status == PaymentStatus.FAILED) return;
+        this.emitFail(reason);
     }
 
 

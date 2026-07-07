@@ -1,6 +1,7 @@
 com\ballcom\shipment\application\OrderPickingCommand.class
 com\ballcom\shipment\application\ShipmentCommandHandler.class
 com\ballcom\shipment\infrastructure\persistence\PostgresEventStore.class
+com\ballcom\shipment\api\ShipmentCommandController.class
 com\ballcom\shipment\domain\ShipmentAggregate.class
 com\ballcom\shipment\infrastructure\messaging\ShipmentRabbitConfig.class
 com\ballcom\shipment\infrastructure\persistence\PostgresEventStore$1.class

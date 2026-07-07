@@ -60,18 +60,6 @@ public class PostgresEventStore implements EventStore {
         }
     }
 
-    public List<GenericDomainEvent> loadEventsById(UUID orderId) {
-        String lookupSql = "SELECT shipment_id FROM shipment_views WHERE order_id = ?";
-        
-        List<UUID> shipmentIds = jdbcTemplate.query(lookupSql, (rs, rowNum) -> rs.getObject("shipment_id", UUID.class), orderId);
-        
-        if (shipmentIds.isEmpty()) {
-            throw new RuntimeException("Geen shipment gevonden voor orderId: " + orderId);
-        }
-
-        return loadEvents(shipmentIds.get(0));
-    }
-
     private long getCurrentVersion(UUID aggregateId) {
         Long version = jdbcTemplate.queryForObject(
                 "SELECT MAX(sequence_number) FROM event_store WHERE aggregate_id = ?", Long.class, aggregateId);

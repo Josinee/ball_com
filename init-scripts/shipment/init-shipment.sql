@@ -21,4 +21,9 @@ CREATE TABLE IF NOT EXISTS shipment_views (
     shipping_price INT,
     status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP NOT NULL
-)
+);
+
+CREATE TABLE IF NOT EXISTS order_shipment_mapping (
+    order_id UUID PRIMARY KEY,
+    shipment_id UUID NOT NULL
+);
