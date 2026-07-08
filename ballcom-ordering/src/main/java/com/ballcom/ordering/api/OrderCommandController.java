@@ -19,7 +19,7 @@ import java.util.UUID;
 //bouwt PlaceOrderCommand en geefft deze door aan OrderCommandHandler
 // geeft een HTTP 202 accepted met het nieuwe orderId. Doet niks met de database
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderCommandController {
 
     private final OrderCommandHandler commandHandler;
@@ -29,7 +29,7 @@ public class OrderCommandController {
     }
 
 
-    @PostMapping("placeorder")
+    @PostMapping("/placeorder")
     public ResponseEntity<?> placeOrder(@RequestBody PlaceOrderRequest request) {
         try {
             if (request == null || request.items() == null || request.items().isEmpty()) {

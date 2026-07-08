@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/orders/placeorder
+  url: http://localhost:8080/api/orders/placeorder
   body:
     type: json
     data: |-
