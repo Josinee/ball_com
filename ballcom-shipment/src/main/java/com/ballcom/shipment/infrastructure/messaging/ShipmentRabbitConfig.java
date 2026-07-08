@@ -7,17 +7,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ShipmentRabbitConfig {
 
-    //shipping is eigenaar van zending
+    //shipment is eigenaar van zending
     @Bean
-    public TopicExchange shippingExchange(){
-        return new TopicExchange("shipping.exchange", true, false);
+    public TopicExchange shipmentExchange(){
+        return new TopicExchange("shipment.exchange", true, false);
     }
 
 
-    //wat wilt shipping ontvangen
+    //wat wilt shipment ontvangen
     @Bean
     public Queue orderPlacedQueue() {
-        return new Queue("shipping-order-placed-queue", true);
+        return new Queue("shipment-order-placed-queue", true);
     }
     //nodig voor de binding
     @Bean
@@ -37,7 +37,7 @@ public class ShipmentRabbitConfig {
 
     @Bean
     public Queue paymentMadeQueue() {
-        return new Queue("shipping-payment-made-queue", true); 
+        return new Queue("shipment-payment-made-queue", true); 
     }
 
     @Bean
@@ -54,12 +54,12 @@ public class ShipmentRabbitConfig {
 
     @Bean
     public Queue deliveryQueue() {
-        return new Queue("shipping-delivery-queue", true);
+        return new Queue("shipment-delivery-queue", true);
     }
 
     @Bean
-    public Binding deliveryBinding(Queue deliveryQueue, TopicExchange shippingExchange) {
-        return BindingBuilder.bind(deliveryQueue).to(shippingExchange).with("shipping.order.#");
+    public Binding deliveryBinding(Queue deliveryQueue, TopicExchange shipmentExchange) {
+        return BindingBuilder.bind(deliveryQueue).to(shipmentExchange).with("shipment.order.#");
     }
 
 }

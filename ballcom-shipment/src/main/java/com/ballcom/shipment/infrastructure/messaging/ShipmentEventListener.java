@@ -1,6 +1,5 @@
 package com.ballcom.shipment.infrastructure.messaging;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shipment.application.ShipmentCommandHandler;
 import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
-import com.ballcom.shipment.application.commands.OrderPickingCommand;
+import com.ballcom.shipment.application.commands.ReleaseShipmentToWarehouse;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 
 
@@ -33,7 +32,7 @@ public class ShipmentEventListener {
 
 
 
-@RabbitListener(queues = "shipping-order-placed-queue") 
+@RabbitListener(queues = "shipment-order-placed-queue") 
 @Transactional
 public void consumeOrderPlaced(GenericDomainEvent event) {
     System.out.println("=== ORDER PLACED CONSUMER HOOK ===");
@@ -81,11 +80,11 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
     
 
 
-    @RabbitListener(queues = "shipping-payment-made-queue")
+    @RabbitListener(queues = "shipment-payment-made-queue")
     @Transactional
     public void consumePaymentLifecycle(GenericDomainEvent event) {
         System.out.println("=== CONSUMER ONTVANGEN ===");
-        System.out.println("RABBITMQ: Bericht ontvangen uit shipping-payment-made-queue. Event ID: " + event.eventId() + ", Type: " + event.eventType());
+        System.out.println("RABBITMQ: Bericht ontvangen uit shipment-payment-made-queue. Event ID: " + event.eventId() + ", Type: " + event.eventType());
 
         String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
         int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
@@ -100,20 +99,21 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
         //betaling voldaan(prepay) of betaling afwachten(afterpay) gaan beide naar picking
         if (EventType.PAYMENT_COMPLETED.equals(event.eventType()) || EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
         System.out.println("SHIPMENT SAGA: Groen licht ontvangen via " + event.eventType() + " voor order " + orderId + ". Vrijgeven aan magazijn.");
-        
+        UUID shipmentId = jdbcTemplate.queryForObject(
+            "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?", UUID.class, orderId
+        );
         // Stuur één en hetzelfde commando naar de handler
-        var command = new OrderPickingCommand(orderId);
+        var command = new ReleaseShipmentToWarehouse(shipmentId);
         commandHandler.handleReleaseToWarehouse(command);
 
         // Update het Read Model naar PICKING
-        String viewSql = "UPDATE shipment_views SET status = 'PICKING', updated_at = ? WHERE order_id = ?";
-        jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), orderId);
+        String viewSql = "UPDATE shipment_views SET status = 'PICKING', updated_at = ? WHERE shipment_id = ?";
+        jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), shipmentId);
         
-        System.out.println("SHIPMENT VIEW: Status bijgewerkt naar PICKING voor order: " + orderId);
     }
     }
 
-    @RabbitListener(queues = "shipping-delivery-queue")
+    @RabbitListener(queues = "shipment-delivery-queue")
     @Transactional
     public void consumeDelivery(GenericDomainEvent event) {
         String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
@@ -123,7 +123,7 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
         Map<String, Object> payload = (Map<String, Object>) event.payload();
         UUID orderId = UUID.fromString((String) payload.get("orderId"));
 
-        if (EventType.ORDER_SHIPPED.equals(event.eventType())) {
+        if (EventType.SHIPMENT_SHIPPED.equals(event.eventType())) {
             System.out.println("Shipment: Pakket is overgedragen aan carrier voor order " + orderId);
 
             String viewSql = """
@@ -135,7 +135,7 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
 
             System.out.println("SHIPMENT VIEW: Status bijgewerkt naar SHIPPED voor order: " + orderId);
         } 
-        else if (EventType.ORDER_DELIVERED.equals(event.eventType())) {
+        else if (EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
             System.out.println("Shipment: Pakket succesvol bezorgd voor order " + orderId);
 
             String viewSql = """

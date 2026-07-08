@@ -1,10 +1,19 @@
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\api\dto\DeliverOrderCommmand.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\api\dto\ShipOrderCommand.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\api\ShipmentCommandController.java
+<<<<<<< HEAD
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\DeliverOrderCommand.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\InitiateShipmentCommand.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\OrderPickingCommand.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\ShipOrderCommand.java
+=======
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\DeliverShipmentCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\InitiateShipmentCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\OrderPickingCommand.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\ReleaseShipmentToWarehouse.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\ShipmentResponse.java
+C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\commands\ShipShipmentCommand.java
+>>>>>>> US18/process-payment
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\application\ShipmentCommandHandler.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\domain\ShipmentAggregate.java
 C:\dev\ball_com\ballcom-shipment\src\main\java\com\ballcom\shipment\domain\ShipmentStatus.java

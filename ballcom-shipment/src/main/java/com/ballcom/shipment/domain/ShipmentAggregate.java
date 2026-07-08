@@ -69,7 +69,7 @@ public class ShipmentAggregate extends AggregateRoot {
             UUID.randomUUID(),
             this.getId(),
             this.getSequenceNumber() + 1,
-            EventType.ORDER_SHIPPED,
+            EventType.SHIPMENT_SHIPPED,
             Instant.now(),
             Map.of(
                 "status", "SHIPPED",
@@ -86,7 +86,7 @@ public class ShipmentAggregate extends AggregateRoot {
             UUID.randomUUID(),
             this.getId(),
             this.getSequenceNumber() + 1,
-            EventType.ORDER_DELIVERED,
+            EventType.SHIPMENT_DELIVERED,
             Instant.now(),
             Map.of(
                 "status", "DELIVERED",
@@ -113,7 +113,7 @@ public class ShipmentAggregate extends AggregateRoot {
         else if (EventType.ORDER_PICKED.equals(event.eventType())) {
             this.status = ShipmentStatus.PICKING;
         } 
-        else if (EventType.ORDER_SHIPPED.equals(event.eventType())) {
+        else if (EventType.SHIPMENT_SHIPPED.equals(event.eventType())) {
             if (payload.containsKey("carrier")) {
                 this.carrier = (String) payload.get("carrier");
             }
@@ -122,7 +122,7 @@ public class ShipmentAggregate extends AggregateRoot {
             }
             this.status = ShipmentStatus.SHIPPED;
         } 
-        else if (EventType.ORDER_DELIVERED.equals(event.eventType())) {
+        else if (EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
             this.status = ShipmentStatus.DELIVERED;
         }
     }

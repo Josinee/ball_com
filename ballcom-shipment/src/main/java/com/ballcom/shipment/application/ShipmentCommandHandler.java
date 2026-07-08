@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
-import com.ballcom.shipment.application.commands.DeliverOrderCommand;
+import com.ballcom.shipment.application.commands.DeliverShipmentCommand;
 import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
 import com.ballcom.shipment.application.commands.OrderPickingCommand;
-import com.ballcom.shipment.application.commands.ShipOrderCommand;
+import com.ballcom.shipment.application.commands.ReleaseShipmentToWarehouse;
+import com.ballcom.shipment.application.commands.ShipShipmentCommand;
 import com.ballcom.shipment.domain.ShipmentAggregate;
 
 @Component
@@ -48,21 +49,12 @@ public class ShipmentCommandHandler  {
     }
 
     @Transactional
-    public void handleReleaseToWarehouse(OrderPickingCommand command) {
-        //haal shipmentid uit orderid mapping
-        String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
-        UUID shipmentId;
-        
-        try {
-            shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
-        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
-            // Als dit gegooid wordt, is de INSERT in de listener om een of andere reden nooit uitgevoerd of mislukt!
-            throw new RuntimeException("Fout bij PaymentApproved: Geen shipment_id mapping gevonden in 'order_shipment_mapping' voor orderId: " + command.orderId());
-        }
+    public void handleReleaseToWarehouse(ReleaseShipmentToWarehouse command) {
+
         // laad event history
-        List<GenericDomainEvent> history = eventStore.loadEvents(shipmentId);
+        List<GenericDomainEvent> history = eventStore.loadEvents(command.shipmentId());
         if (history == null || history.isEmpty()) {
-            throw new RuntimeException("Fout bij PaymentApproved: De mapping bestaat (shipmentId: " + shipmentId + "), maar er zijn GEEN events gevonden in de event_store voor deze shipment. Is het aanmaken van de shipment gecrasht?");
+            throw new RuntimeException("Fout bij PaymentApproved: De mapping bestaat (shipmentId: " + command.shipmentId() + "), maar er zijn GEEN events gevonden in de event_store voor deze shipment. Is het aanmaken van de shipment gecrasht?");
         }
         ShipmentAggregate shipment = new ShipmentAggregate();
         shipment.loadFromHistory(history);
@@ -74,14 +66,14 @@ public class ShipmentCommandHandler  {
 
     }
 
-    public UUID handleOrderShipped(ShipOrderCommand command) {
+    public UUID handleOrderShipped(ShipShipmentCommand command) {
+
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
 
         List<GenericDomainEvent> history = eventStore.loadEvents(shipmentId);
         ShipmentAggregate shipment = new ShipmentAggregate();
         shipment.loadFromHistory(history);
-
         shipment.markAsShipped(shipment.getCarrier(), shipment.getShippingPrice());
         eventStore.append(shipment.getId(), shipment.getUncommitedEvents(), shipment.getExpectedVersion());
         shipment.clearUncommitedEvents();
@@ -89,10 +81,11 @@ public class ShipmentCommandHandler  {
     }
 
     @Transactional
-    public UUID handleDeliveryCompleted(DeliverOrderCommand command) {
+    public UUID handleDeliveryCompleted(DeliverShipmentCommand command) {
 
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
+
 
         List<GenericDomainEvent> history = eventStore.loadEvents(shipmentId);
         ShipmentAggregate shipment = new ShipmentAggregate();

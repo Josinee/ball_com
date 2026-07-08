@@ -26,15 +26,15 @@ public class PaymentRabbitConfig {
     }
 
 
-    //als shipping price berekend is stuurt shipping een COSTS_CALCULATED, hier wordt hij opgevangen
+    //als shipping price berekend is stuurt shipmpent een COSTS_CALCULATED, hier wordt hij opgevangen
     @Bean
-    public TopicExchange shippingExchange() {
-        return new TopicExchange("shipping.exchange", true, false);
+    public TopicExchange shipmentExchange() {
+        return new TopicExchange("shipment.exchange", true, false);
     }
 
     @Bean
-    public Binding listenToCostsCalculeted(Queue orderPlacedQueue, TopicExchange shippingExchange) {
-        return BindingBuilder.bind(orderPlacedQueue).to(shippingExchange).with("shipping.costs.calculated");
+    public Binding listenToCostsCalculeted(Queue orderPlacedQueue, TopicExchange shipmentExchange) {
+        return BindingBuilder.bind(orderPlacedQueue).to(shipmentExchange).with("shipment.costs.calculated");
     }
 
     @Bean
@@ -43,8 +43,8 @@ public class PaymentRabbitConfig {
     }
 
     @Bean
-    public Binding shipmentDeliveryBinding(Queue shipmentDeliveryQueue, TopicExchange shippingExchange) {
-        return BindingBuilder.bind(shipmentDeliveryQueue).to(shippingExchange).with("shipping.order.#");
+    public Binding shipmentDeliveryBinding(Queue shipmentDeliveryQueue, TopicExchange shipmentExchange) {
+        return BindingBuilder.bind(shipmentDeliveryQueue).to(shipmentExchange).with("shipment.order.#");
     }
 
 
