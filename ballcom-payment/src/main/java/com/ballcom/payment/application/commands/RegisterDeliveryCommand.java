@@ -1,4 +1,4 @@
-package com.ballcom.payment.application;
+package com.ballcom.payment.application.commands;
 
 import java.util.UUID;
 

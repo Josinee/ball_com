@@ -1,5 +1,6 @@
 package com.ballcom.customer.application;
 
+import com.ballcom.customer.application.commands.RegisterCustomerCommand;
 import com.ballcom.customer.domain.CustomerAggregate;
 import com.ballcom.customer.domain.valueobject.Address;
 import com.ballcom.customer.domain.valueobject.PhoneNumber;

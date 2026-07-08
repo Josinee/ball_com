@@ -4,8 +4,8 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ballcom.shipment.application.ShipmentCommandHandler;
-import com.ballcom.shipment.application.dto.DeliverOrderCommand;
-import com.ballcom.shipment.application.dto.ShipOrderCommand;
+import com.ballcom.shipment.application.commands.DeliverOrderCommand;
+import com.ballcom.shipment.application.commands.ShipOrderCommand;
 
 @RestController
 @RequestMapping("/shipments")

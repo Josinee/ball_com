@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
-import com.ballcom.shipment.application.dto.DeliverOrderCommand;
-import com.ballcom.shipment.application.dto.InitiateShipmentCommand;
-import com.ballcom.shipment.application.dto.OrderPickingCommand;
-import com.ballcom.shipment.application.dto.ShipOrderCommand;
+import com.ballcom.shipment.application.commands.DeliverOrderCommand;
+import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
+import com.ballcom.shipment.application.commands.OrderPickingCommand;
+import com.ballcom.shipment.application.commands.ShipOrderCommand;
 import com.ballcom.shipment.domain.ShipmentAggregate;
 
 @Component

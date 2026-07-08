@@ -4,7 +4,7 @@ package com.ballcom.customer.api;
 import com.ballcom.customer.api.dto.CustomerRegisterRequest;
 import com.ballcom.customer.api.dto.CustomerRegisteredResponse;
 import com.ballcom.customer.application.CustomerCommandHandler;
-import com.ballcom.customer.application.RegisterCustomerCommand;
+import com.ballcom.customer.application.commands.RegisterCustomerCommand;
 import com.ballcom.shared.ErrorResponse;
 
 import org.springframework.http.HttpStatus;

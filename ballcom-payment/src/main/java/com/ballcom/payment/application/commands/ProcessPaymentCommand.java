@@ -1,4 +1,4 @@
-package com.ballcom.payment.application;
+package com.ballcom.payment.application.commands;
 
 import java.math.BigDecimal;
 import java.util.UUID;

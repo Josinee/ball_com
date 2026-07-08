@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ballcom.payment.api.dto.PaymentMadeCommand;
-import com.ballcom.payment.application.CompletePaymentCommand;
-import com.ballcom.payment.application.FailPaymentCommand;
 import com.ballcom.payment.application.PaymentCommandHandler;
+import com.ballcom.payment.application.commands.CompletePaymentCommand;
+import com.ballcom.payment.application.commands.FailPaymentCommand;
 import com.ballcom.shared.ErrorResponse;
 
 

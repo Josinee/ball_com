@@ -1,4 +1,4 @@
-package com.ballcom.catalog.application;
+package com.ballcom.catalog.application.commands;
 
 public record CreateCatalogCommand (
     String itemName,
