@@ -1,5 +1,7 @@
 package com.ballcom.catalog.infrastructure.importer;
 
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
+@Service
 public class CatalogImportService {
 
     private JdbcTemplate jdbcTemplate;
@@ -44,15 +47,17 @@ public class CatalogImportService {
                 description,
                 category,
                 availability,
+                owner,
                 updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (catalog_id) DO UPDATE
                 SET item_name = EXCLUDED.item_name,
                 price = EXCLUDED.price,
                 description = EXCLUDED.description,
                 category = EXCLUDED.category,
                 availability = EXCLUDED.availability,
+                owner = EXCLUDED.owner,
                 updated_at = EXCLUDED.updated_at
                 """;
 
@@ -64,6 +69,7 @@ public class CatalogImportService {
                         String description = record.get("Description");
                         String category = record.get("Category");
                         String availability = record.get("Availability");
+                        String owner = record.get("owner");
 
                         UUID catalogId = UUID.randomUUID();
 
@@ -75,6 +81,7 @@ public class CatalogImportService {
                             description,
                             category,
                             availability,
+                            owner,
                             Timestamp.from(Instant.now())
                         );
                         counter++;

@@ -5,6 +5,7 @@ public record CreateCatalogCommand (
     String price,
     String description,
     String category,
-    String availability
+    String availability,
+    String owner
 )
 {}

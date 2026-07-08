@@ -1,5 +1,8 @@
 package com.ballcom.catalog.infrastructure.persistence;
 
+import org.springframework.stereotype.Repository;
+import com.ballcom.shared.eventsourcing.EventStore;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +13,8 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.messaging.EventPublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PostgresEventStore {
+@Repository
+public class PostgresEventStore implements EventStore{
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
     private final EventPublisher eventPublisher;

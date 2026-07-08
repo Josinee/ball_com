@@ -45,6 +45,7 @@ public class CatalogProjectionHandler {
                 String description = (String) payload.get("description");
                 String category = (String) payload.get("category");
                 String availability = (String) payload.get("availability");
+                String owner = (String) payload.get("owner");
 
                 String sql = """
                 INSERT INTO catalog_views (
@@ -54,15 +55,17 @@ public class CatalogProjectionHandler {
                 description,
                 category,
                 availability,
+                owner,
                 updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (catalog_id) DO UPDATE
                 SET item_name = EXCLUDED.item_name,
                 price = EXCLUDED.price,
                 description = EXCLUDED.description,
                 category = EXCLUDED.category,
                 availability = EXCLUDED.availability,
+                owner = EXCLUDED.owner,
                 updated_at = EXCLUDED.updated_at
                 """;
 
@@ -73,6 +76,7 @@ public class CatalogProjectionHandler {
                     description,
                     category,
                     availability,
+                    owner,
                     Timestamp.from(event.occurredAt())
                 );
 
