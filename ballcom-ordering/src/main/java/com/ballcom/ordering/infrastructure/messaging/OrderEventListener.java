@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class OrderEventListener {
@@ -21,9 +22,12 @@ public class OrderEventListener {
         this.jdbcTemplate = jdbcTemplate;
 
     }
-
+    @Transactional
     @RabbitListener(queues = "ordering-payment-updates-queue")
     public void listenPaymentUpdates(GenericDomainEvent event) {
+
+        System.out.println("[DEBUG] === ONDERDEEL PAYMENT UPDATE GESTART ===");
+    System.out.println("[DEBUG] Event ontvangen! Type: " + event.eventType() + " | ID: " + event.eventId());
         try {
             String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
             int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
@@ -32,8 +36,12 @@ public class OrderEventListener {
                 return;
             }
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
-                String orderIdString = (String) payload.get("orderId");
-                UUID orderId = UUID.fromString(orderIdString);
+                System.out.println("[DEBUG] Volledige payload inhoud: " + payload);
+                Object orderIdObj = payload.get("orderId"); 
+            if (orderIdObj == null) {
+                throw new IllegalArgumentException("Payload mist de cruciale 'orderId' key! Beschikbare keys: " + payload.keySet());
+            }
+                UUID orderId = UUID.fromString((String) payload.get("orderId"));
             if(EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
 
 
@@ -62,6 +70,7 @@ public class OrderEventListener {
     }
 
     // Deze methode luistert naar de queue
+    @Transactional
     @RabbitListener(queues = "ordering-readmodel-queue")
     public void consume(GenericDomainEvent event) {
         try {
@@ -106,6 +115,39 @@ public class OrderEventListener {
                     System.out.println("READ MODEL: Order " + orderId + " successfully saved to order_views.");
                 } catch (Exception e) {
                     System.err.println("Error processing order event: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else if (EventType.SHIPMENT_SHIPPED.equals(event.eventType())) {
+                try {
+                    UUID shipmentId = event.aggregateId();
+                    
+                    String sqlMapping = "SELECT order_id FROM order_shipment_mapping WHERE shipment_id = ?";
+                    UUID orderId = jdbcTemplate.queryForObject(sqlMapping, UUID.class, shipmentId);
+                    
+                    String sqlUpdate = "UPDATE order_views SET order_status = 'SHIPPED', updated_at = ? WHERE order_id = ?";
+                    jdbcTemplate.update(sqlUpdate, Timestamp.from(event.occurredAt()), orderId);
+                    
+                    System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als SHIPPED.");
+                } catch (Exception e) {
+                    System.err.println("Error processing shipment shipped event: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
+
+            else if (EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
+                try {
+                    UUID shipmentId = event.aggregateId();
+                    
+                    String sqlMapping = "SELECT order_id FROM order_shipment_mapping WHERE shipment_id = ?";
+                    UUID orderId = jdbcTemplate.queryForObject(sqlMapping, UUID.class, shipmentId);
+                    
+                    String sqlUpdate = "UPDATE order_views SET order_status = 'DELIVERED', updated_at = ? WHERE order_id = ?";
+                    jdbcTemplate.update(sqlUpdate, Timestamp.from(event.occurredAt()), orderId);
+                    
+                    System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als DELIVERED.");
+                } catch (Exception e) {
+                    System.err.println("Error processing shipment delivered event: " + e.getMessage());
                     e.printStackTrace();
                 }
             }

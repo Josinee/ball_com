@@ -23,11 +23,11 @@ public class ShipmentEventPublisher implements EventPublisher{
     
         System.out.println("=== TRANSPORT START ===");
         System.out.println("RABBITMQ: Poging tot verzenden... EventType: " + event.eventType()
-                + " naar exchange: shipping.exchange");
-        String routingKey = "shipping." + event.eventType().name().toLowerCase().replace("_", ".");
+                + " naar exchange: shipment.exchange");
+        String routingKey = "shipment." + event.eventType().name().toLowerCase().replace("_", ".");
         try {
-            rabbitTemplate.convertAndSend("shipping.exchange", routingKey, event);
-            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "shipping." + event.eventType().name().toLowerCase().replace("_", "."));
+            rabbitTemplate.convertAndSend("shipment.exchange", routingKey, event);
+            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "shipment." + event.eventType().name().toLowerCase().replace("_", "."));
         } catch (Exception e) {
             System.err.println("RABBITMQ FOUT: Verzenden mislukt! " + e.getMessage());
         }
