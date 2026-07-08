@@ -61,7 +61,7 @@ public class PaymentCommandHandler {
      * of wanneer een AFTERPAY order succesvol is bezorgd en de factuur is voldaan.
      */
     @Transactional
-    public void handle(CompletePaymentCommand command) {
+    public UUID handle(CompletePaymentCommand command) {
         // 1. Zoek de actieve betaling op basis van de ORDER ID uit het command
         String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
         UUID paymentId;
@@ -81,6 +81,7 @@ public class PaymentCommandHandler {
 
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
+        return payment.getId();
     }
 
     /**

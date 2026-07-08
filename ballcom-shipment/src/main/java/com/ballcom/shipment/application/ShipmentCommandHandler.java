@@ -74,7 +74,7 @@ public class ShipmentCommandHandler  {
 
     }
 
-    public void handleOrderShipped(ShipOrderCommand command) {
+    public UUID handleOrderShipped(ShipOrderCommand command) {
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
 
@@ -85,10 +85,11 @@ public class ShipmentCommandHandler  {
         shipment.markAsShipped(shipment.getCarrier(), shipment.getShippingPrice());
         eventStore.append(shipment.getId(), shipment.getUncommitedEvents(), shipment.getExpectedVersion());
         shipment.clearUncommitedEvents();
+        return shipment.getId();
     }
 
     @Transactional
-    public void handleDeliveryCompleted(DeliverOrderCommand command) {
+    public UUID handleDeliveryCompleted(DeliverOrderCommand command) {
 
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
@@ -100,6 +101,7 @@ public class ShipmentCommandHandler  {
         shipment.markAsDelivered();
         eventStore.append(shipment.getId(), shipment.getUncommitedEvents(), shipment.getExpectedVersion());
         shipment.clearUncommitedEvents();
+        return shipment.getId();
     }
 
     

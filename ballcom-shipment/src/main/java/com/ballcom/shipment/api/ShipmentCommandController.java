@@ -18,15 +18,15 @@ public class ShipmentCommandController {
 
     //Handmatig op shipped zetten
     @PostMapping("/{orderId}/ship")
-    public ResponseEntity<String> shipOrder(@PathVariable UUID orderId) {
-        commandHandler.handleOrderShipped(new ShipOrderCommand(orderId));
-        return ResponseEntity.ok("Order marked as SHIPPED for order " + orderId);
+    public ResponseEntity<?> shipOrder(@PathVariable UUID orderId) {
+        UUID shipmentId = commandHandler.handleOrderShipped(new ShipOrderCommand(orderId));
+        return ResponseEntity.accepted().body(new ShipOrderCommand(shipmentId)); 
     }
 
     //Handmatig op delivered zetten
     @PostMapping("/{orderId}/deliver")
-    public ResponseEntity<String> deliverOrder(@PathVariable UUID orderId) {
-        commandHandler.handleDeliveryCompleted(new DeliverOrderCommand(orderId));
-        return ResponseEntity.ok("Order marked as DELIVERED for order " + orderId);
+    public ResponseEntity<?> deliverOrder(@PathVariable UUID orderId) {
+        UUID shipmentId = commandHandler.handleDeliveryCompleted(new DeliverOrderCommand(orderId));
+        return ResponseEntity.accepted().body(new ShipOrderCommand(shipmentId)); 
     }
 }
