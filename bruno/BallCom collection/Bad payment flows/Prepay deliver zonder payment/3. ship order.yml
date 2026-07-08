@@ -1,11 +1,11 @@
 info:
-  name: deliver order
+  name: 3. ship order
   type: http
-  seq: 4
+  seq: 2
 
 http:
   method: POST
-  url: ""
+  url: http://localhost:8080/shipments/{{orderIdPrePay}}/ship
   auth: inherit
 
 settings:

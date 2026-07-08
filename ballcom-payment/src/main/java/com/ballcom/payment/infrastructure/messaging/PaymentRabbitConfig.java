@@ -25,6 +25,7 @@ public class PaymentRabbitConfig {
         return BindingBuilder.bind(orderPlacedQueue).to(orderExchange).with("order.placed");
     }
 
+
     //als shipping price berekend is stuurt shipping een COSTS_CALCULATED, hier wordt hij opgevangen
     @Bean
     public TopicExchange shippingExchange() {
@@ -32,7 +33,7 @@ public class PaymentRabbitConfig {
     }
 
     @Bean
-    public Binding paymentListenToShippingBinding(Queue orderPlacedQueue, TopicExchange shippingExchange) {
+    public Binding listenToCostsCalculeted(Queue orderPlacedQueue, TopicExchange shippingExchange) {
         return BindingBuilder.bind(orderPlacedQueue).to(shippingExchange).with("shipping.costs.calculated");
     }
 
@@ -43,8 +44,9 @@ public class PaymentRabbitConfig {
 
     @Bean
     public Binding shipmentDeliveryBinding(Queue shipmentDeliveryQueue, TopicExchange shippingExchange) {
-        return BindingBuilder.bind(shipmentDeliveryQueue).to(shippingExchange).with("shipping.package.delivered");
+        return BindingBuilder.bind(shipmentDeliveryQueue).to(shippingExchange).with("shipping.order.#");
     }
+
 
 
 

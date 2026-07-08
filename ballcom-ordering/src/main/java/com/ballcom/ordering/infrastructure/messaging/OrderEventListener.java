@@ -31,20 +31,25 @@ public class OrderEventListener {
                 System.out.println("Event " + event.eventId() + "al eerder verwerkt"); //TODO engels?
                 return;
             }
-            if(EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
                 String orderIdString = (String) payload.get("orderId");
                 UUID orderId = UUID.fromString(orderIdString);
+            if(EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
+
 
                 String sql = "UPDATE order_views SET payment_status = 'PAID' WHERE order_id = ?";
                 jdbcTemplate.update(sql, orderId);
                 System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als PAID.");
             } 
+
+            else if(EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
+                //afterpay flow, order is nog niet paid maar betaling is gegarandeerd
+                jdbcTemplate.update("UPDATE order_views SET payment_status = 'AFTERPAY_AWAITING_DELIVERY' where order_id = ?", orderId);
+
+            }
             
             else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
-                Map<String, Object> payload = (Map<String, Object>) event.payload();
-                String orderIdString = (String) payload.get("orderId");
-                UUID orderId = UUID.fromString(orderIdString);
+
                 String sql = "UPDATE order_views SET payment_status = 'PAYMENT_FAILED' WHERE order_id = ?";
                 jdbcTemplate.update(sql, orderId);
                 System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als PAYMENT FAILED.");
@@ -78,7 +83,7 @@ public class OrderEventListener {
                     BigDecimal totalAmount = new BigDecimal(payload.get("totalAmount").toString());
                     
                     String orderStatus = "PLACED";
-                    String paymentStatus = "PENDING";
+                    String paymentStatus = "AWAITING";
 
                     String sql = """
                         INSERT INTO order_views (order_id, customer_id, total_amount, order_status, payment_status, updated_at)

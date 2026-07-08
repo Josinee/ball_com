@@ -9,6 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
+import com.ballcom.shipment.application.dto.DeliverOrderCommand;
+import com.ballcom.shipment.application.dto.InitiateShipmentCommand;
+import com.ballcom.shipment.application.dto.OrderPickingCommand;
+import com.ballcom.shipment.application.dto.ShipOrderCommand;
 import com.ballcom.shipment.domain.ShipmentAggregate;
 
 @Component
@@ -44,8 +48,8 @@ public class ShipmentCommandHandler  {
     }
 
     @Transactional
-    public void handlePaymentApproved(OrderPickingCommand command) {
-        
+    public void handleReleaseToWarehouse(OrderPickingCommand command) {
+        //haal shipmentid uit orderid mapping
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId;
         
@@ -55,7 +59,7 @@ public class ShipmentCommandHandler  {
             // Als dit gegooid wordt, is de INSERT in de listener om een of andere reden nooit uitgevoerd of mislukt!
             throw new RuntimeException("Fout bij PaymentApproved: Geen shipment_id mapping gevonden in 'order_shipment_mapping' voor orderId: " + command.orderId());
         }
-    
+        // laad event history
         List<GenericDomainEvent> history = eventStore.loadEvents(shipmentId);
         if (history == null || history.isEmpty()) {
             throw new RuntimeException("Fout bij PaymentApproved: De mapping bestaat (shipmentId: " + shipmentId + "), maar er zijn GEEN events gevonden in de event_store voor deze shipment. Is het aanmaken van de shipment gecrasht?");
@@ -70,7 +74,7 @@ public class ShipmentCommandHandler  {
 
     }
 
-    public void handlePackageShipped(ShipPackageCommand command) {
+    public void handleOrderShipped(ShipOrderCommand command) {
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
 
@@ -84,7 +88,7 @@ public class ShipmentCommandHandler  {
     }
 
     @Transactional
-    public void handleDeliveryCompleted(DeliverPackageCommand command) {
+    public void handleDeliveryCompleted(DeliverOrderCommand command) {
 
         String sql = "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?";
         UUID shipmentId = jdbcTemplate.queryForObject(sql, UUID.class, command.orderId());
@@ -97,4 +101,8 @@ public class ShipmentCommandHandler  {
         eventStore.append(shipment.getId(), shipment.getUncommitedEvents(), shipment.getExpectedVersion());
         shipment.clearUncommitedEvents();
     }
+
+    
+
+
 }

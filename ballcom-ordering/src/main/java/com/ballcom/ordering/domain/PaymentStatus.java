@@ -5,7 +5,7 @@ package com.ballcom.ordering.domain;
  */
 public enum PaymentStatus {
     UNPAID,
-    PENDING,
+    AWAITING,
     PAID, 
     FAILED
 }

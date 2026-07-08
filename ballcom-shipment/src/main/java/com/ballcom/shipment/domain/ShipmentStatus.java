@@ -1,6 +1,6 @@
 package com.ballcom.shipment.domain;
 public enum ShipmentStatus {
-    PENDING_PAYMENT,
+    AWAITING_PAYMENT,
     PICKING,
     SHIPPED,
     DELIVERED

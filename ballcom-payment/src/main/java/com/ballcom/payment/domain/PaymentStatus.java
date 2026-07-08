@@ -16,7 +16,18 @@ public enum PaymentStatus implements PaymentState{
         }
     },
        
-    PENDING_DELIVERY {
+    AWAITING_DELIVERY {
+        @Override
+        public void complete(PaymentAggregate aggregate) {
+            aggregate.emitComplete();
+        }
+        @Override
+        public void fail(PaymentAggregate aggregate, String reason){
+            aggregate.emitFail(reason);
+        }
+    },
+
+    DELIVERED {
         @Override
         public void complete(PaymentAggregate aggregate) {
             aggregate.emitComplete();

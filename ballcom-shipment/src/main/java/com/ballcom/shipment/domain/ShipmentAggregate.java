@@ -23,7 +23,7 @@ public class ShipmentAggregate extends AggregateRoot {
 
         Map<String, Object> payload = Map.of(
             "orderId", orderId.toString(),
-            "status", "PENDING_PAYMENT", // Wacht op groen licht van Payment
+            "status", "AWAITING_PAYMENT", // Wacht op groen licht van Payment
             "carrier", carrier,
             "shippingPrice", String.valueOf(shippingPrice)
         );
@@ -37,6 +37,10 @@ public class ShipmentAggregate extends AggregateRoot {
     }
 
     public void releaseToWarehouse() {
+        if(this.status== ShipmentStatus.PICKING || this.status == ShipmentStatus.SHIPPED || this.status == ShipmentStatus.DELIVERED) {
+            return;
+        }
+
         GenericDomainEvent event = new GenericDomainEvent(
             UUID.randomUUID(), this.getId(), this.getSequenceNumber() + 1,
             EventType.ORDER_PICKED, Instant.now(),
@@ -44,7 +48,6 @@ public class ShipmentAggregate extends AggregateRoot {
         );
         this.raiseEvent(event);
     }
-    
 
     public void markAsShipped(String carrier, double shippingPrice) {
         if (this.status != ShipmentStatus.PICKING) {
@@ -66,7 +69,7 @@ public class ShipmentAggregate extends AggregateRoot {
             UUID.randomUUID(),
             this.getId(),
             this.getSequenceNumber() + 1,
-            EventType.PACKAGE_SHIPPED,
+            EventType.ORDER_SHIPPED,
             Instant.now(),
             Map.of(
                 "status", "SHIPPED",
@@ -83,7 +86,7 @@ public class ShipmentAggregate extends AggregateRoot {
             UUID.randomUUID(),
             this.getId(),
             this.getSequenceNumber() + 1,
-            EventType.PACKAGE_DELIVERED,
+            EventType.ORDER_DELIVERED,
             Instant.now(),
             Map.of(
                 "status", "DELIVERED",
@@ -105,12 +108,12 @@ public class ShipmentAggregate extends AggregateRoot {
             this.orderId = UUID.fromString((String) payload.get("orderId"));
             this.carrier = (String) payload.get("carrier");
             this.shippingPrice = Double.parseDouble((String) payload.get("shippingPrice"));
-            this.status = ShipmentStatus.PENDING_PAYMENT;
+            this.status = ShipmentStatus.AWAITING_PAYMENT;
         } 
         else if (EventType.ORDER_PICKED.equals(event.eventType())) {
             this.status = ShipmentStatus.PICKING;
         } 
-        else if (EventType.PACKAGE_SHIPPED.equals(event.eventType())) {
+        else if (EventType.ORDER_SHIPPED.equals(event.eventType())) {
             if (payload.containsKey("carrier")) {
                 this.carrier = (String) payload.get("carrier");
             }
@@ -119,7 +122,7 @@ public class ShipmentAggregate extends AggregateRoot {
             }
             this.status = ShipmentStatus.SHIPPED;
         } 
-        else if (EventType.PACKAGE_DELIVERED.equals(event.eventType())) {
+        else if (EventType.ORDER_DELIVERED.equals(event.eventType())) {
             this.status = ShipmentStatus.DELIVERED;
         }
     }

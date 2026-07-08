@@ -42,16 +42,29 @@ public class PaymentAggregate extends AggregateRoot {
         return payment;
     }
 
+    public void registerDelivery() {
+        if(this.status != PaymentStatus.AWAITING_DELIVERY) {
+            return;
+        }
+        GenericDomainEvent event = new GenericDomainEvent(
+            UUID.randomUUID(), this.getId(), this.getSequenceNumber() + 1, EventType.PAYMENT_DELIVERY_CONFIIRMED, Instant.now(), Map.of("orderId", this.orderId)
+        );
+        this.raiseEvent(event);
+    }
+
 
 
 
     public void holdForDelivery() {
-        if(this.status == PaymentStatus.PENDING_DELIVERY) return;
+        if(this.status == PaymentStatus.AWAITING_DELIVERY) return;
         this.emitHoldForDelivery();
     }
 
     public void complete() {
         if(this.status == PaymentStatus.COMPLETED) return;
+        if(this.status == PaymentStatus.AWAITING_DELIVERY) {
+            throw new IllegalStateException("AfterPay betaling kan pas worden afgerond nadat het pakket succesvol is BEZORGD (DELIVERED).");
+        }
         this.emitComplete();
     }
 
@@ -71,7 +84,7 @@ public class PaymentAggregate extends AggregateRoot {
             EventType.PAYMENT_AWAITING_DELIVERY,
             Instant.now(),
             Map.of(
-                "status", "PENDING_DELIVERY",
+                "status", "AWAITING_DELIVERY",
                 "orderId", this.orderId.toString(),
                 "paymentMethod", this.paymentMethod.name()
             )
@@ -123,15 +136,16 @@ public class PaymentAggregate extends AggregateRoot {
             this.status = PaymentStatus.INITIATED;
         } 
         else if (EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
-            this.status = PaymentStatus.PENDING_DELIVERY;
+            this.status = PaymentStatus.AWAITING_DELIVERY;
         } 
         else if (EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
             this.status = PaymentStatus.COMPLETED;
         } 
         else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
             this.status = PaymentStatus.FAILED;
+        } else if (EventType.PAYMENT_DELIVERY_CONFIIRMED.equals(event.eventType())) {
+            this.status = PaymentStatus.DELIVERED;
         }
-    
 
     }
 

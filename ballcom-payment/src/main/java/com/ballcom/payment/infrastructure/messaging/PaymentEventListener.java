@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ballcom.payment.application.CompletePaymentCommand;
 import com.ballcom.payment.application.PaymentCommandHandler;
 import com.ballcom.payment.application.ProcessPaymentCommand;
+import com.ballcom.payment.application.RegisterDeliveryCommand;
 import com.ballcom.payment.domain.PaymentMethod;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 
@@ -128,15 +129,22 @@ public class PaymentEventListener {
     @RabbitListener(queues = "payment-shipment-delivery-queue")
     @Transactional
     public void consumeDelivery(GenericDomainEvent event) {
-        if (!EventType.PACKAGE_DELIVERED.equals(event.eventType())) {
+        // String match voorkomt Enum-deserialisatie fouten
+        if (!"ORDER_DELIVERED".equals(event.eventType().toString())) {
             return;
         }
 
         Map<String, Object> payload = (Map<String, Object>) event.payload();
         UUID orderId = UUID.fromString((String) payload.get("orderId"));
 
-        System.out.println("Delivery ontvangen voor order " + orderId + ". Betaling wordt afgerond.");
-        commandHandler.handle(new CompletePaymentCommand(orderId));
+        System.out.println("PAYMENT: Pakket is bezorgd! Status in Payment wordt verzet zodat klant straks /pay kan doen.");
+        
+        // 1. Voer de state transition uit in de aggregate
+        commandHandler.handle(new RegisterDeliveryCommand(orderId));
+
+        // 2. Update direct je read model zodat het klopt in je database GUI
+        String updateSql = "UPDATE payment_views SET status = 'DELIVERY_CONFIRMED', updated_at = ? WHERE order_id = ?";
+        jdbcTemplate.update(updateSql, Timestamp.from(event.occurredAt()), orderId);
     }
 
     @RabbitListener(queues = "payment-readmodel-queue")
@@ -161,6 +169,7 @@ public class PaymentEventListener {
             jdbcTemplate.update(sql, paymentId, Timestamp.from(event.occurredAt()), orderId);
             System.out.println("READ MODEL: Payment " + paymentId + " gekoppeld aan Order " + orderId);
         }
+
         
         else if (EventType.PAYMENT_COMPLETED.equals(event.eventType())) {
             // ONDERDEEL VAN DE FIX: We zoeken nu direct op payment_id! Dat matcht 1-op-1 met het event.
@@ -168,6 +177,12 @@ public class PaymentEventListener {
             int updated = jdbcTemplate.update(sql, Timestamp.from(event.occurredAt()), paymentId);
             System.out.println("READ MODEL: Payment " + paymentId + " staat op COMPLETED (Rijen geraakt: " + updated + ")");
         } 
+
+        else if (EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
+            String sql = "UPDATE payment_views set status = 'AWAITING_DELIVERY', updated_at = ? WHERE payment_id = ?";
+            jdbcTemplate.update(sql, Timestamp.from(event.occurredAt()), paymentId);
+            System.out.println("READ MODEL: Payment " + paymentId + " staat op AWAITING_DELIVERY ");
+        }
         
         else if (EventType.PAYMENT_FAILED.equals(event.eventType())) {
             // ONDERDEEL VAN DE FIX: Zoeken op payment_id

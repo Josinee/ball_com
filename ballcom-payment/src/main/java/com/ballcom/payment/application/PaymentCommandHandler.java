@@ -78,10 +78,6 @@ public class PaymentCommandHandler {
         PaymentAggregate payment = new PaymentAggregate();
         payment.loadFromHistory(history);
 
-        if (payment.getStatus() == PaymentStatus.COMPLETED) {
-            return;
-        }
-
         payment.complete();
 
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
@@ -112,6 +108,22 @@ public class PaymentCommandHandler {
         payment.fail(command.reason());
 
         // 3. Sla het PAYMENT_FAILED event op
+        eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
+        payment.clearUncommitedEvents();
+    }
+
+    @Transactional
+    public void handle(RegisterDeliveryCommand command) {
+        String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
+        UUID paymentId = jdbcTemplate.queryForObject(lookupSql, UUID.class, command.orderId());
+        
+        List<GenericDomainEvent> history = eventStore.loadEvents(paymentId); 
+        PaymentAggregate payment = new PaymentAggregate();
+        payment.loadFromHistory(history);
+
+        // Zet de status op DELIVERY_CONFIRMED
+        payment.registerDelivery();
+
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
     }

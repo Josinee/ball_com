@@ -10,6 +10,5 @@ public class PaymentApplication {
     public static void main(String[] args) {
         SpringApplication.run(PaymentApplication.class, args);
     }
-    //afterpay path klopt volgensmij nog niet helemaal
     //fail kan retryen, niet gelijk naar complete, eerst weer terug naar initiated
 }

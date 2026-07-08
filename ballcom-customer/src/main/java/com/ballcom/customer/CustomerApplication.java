@@ -12,5 +12,5 @@ public class CustomerApplication {
     public static void main(String[] args) {
         SpringApplication.run(CustomerApplication.class, args);
     }
-    //TODO kan zijn vorige of pending bestellingen nog niet zien
+    //TODO kan zijn vorige of awaiting bestellingen nog niet zien
 }

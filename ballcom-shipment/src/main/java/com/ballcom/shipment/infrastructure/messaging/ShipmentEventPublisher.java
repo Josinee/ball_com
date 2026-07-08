@@ -19,11 +19,11 @@ public class ShipmentEventPublisher implements EventPublisher{
 
     @Override
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void publish(GenericDomainEvent event) {
+    public void publish(GenericDomainEvent event) { 
     
         System.out.println("=== TRANSPORT START ===");
         System.out.println("RABBITMQ: Poging tot verzenden... EventType: " + event.eventType()
-                + " naar exchange: payment.exchange");
+                + " naar exchange: shipping.exchange");
         String routingKey = "shipping." + event.eventType().name().toLowerCase().replace("_", ".");
         try {
             rabbitTemplate.convertAndSend("shipping.exchange", routingKey, event);
