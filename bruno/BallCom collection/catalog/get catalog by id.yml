@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/api/catalog/cefff662-6bef-411c-b416-3678e71cf083
+  url: http://localhost:8080/catalog/cefff662-6bef-411c-b416-3678e71cf083
   auth: inherit
 
 settings:

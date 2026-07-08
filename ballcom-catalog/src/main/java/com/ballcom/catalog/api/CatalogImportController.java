@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ballcom.catalog.infrastructure.importer.CatalogImportService;
 
 @RestController
-@RequestMapping("/api/catalogs")
+@RequestMapping("/catalogs")
 public class CatalogImportController {
     private final CatalogImportService catalogImportService;
 

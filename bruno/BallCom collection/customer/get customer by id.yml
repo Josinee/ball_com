@@ -1,11 +1,11 @@
 info:
-  name: import CSV
+  name: get customer by id
   type: http
   seq: 3
 
 http:
-  method: POST
-  url: http://localhost:8081/api/customers/import
+  method: GET
+  url: http://localhost:8080/customers/{{customerId}}
   auth: inherit
 
 settings:

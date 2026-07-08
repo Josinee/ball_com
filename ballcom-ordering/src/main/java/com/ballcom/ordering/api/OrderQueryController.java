@@ -1,5 +1,6 @@
 package com.ballcom.ordering.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ballcom.ordering.api.dto.OrderViewResponse;
 
+
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 public class OrderQueryController {
     private final JdbcTemplate jdbcTemplate;
 
@@ -42,4 +44,20 @@ public class OrderQueryController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<OrderViewResponse>> getOrdersByCustomer(@PathVariable UUID customerId) {
+        String sql = "SELECT order_id, customer_id, total_amount, order_status, payment_status FROM order_views WHERE customer_id = ?";
+
+        List<OrderViewResponse> orders = jdbcTemplate.query(sql,
+        (rs, rowNum) -> new OrderViewResponse(
+            rs.getObject("order_id", UUID.class),
+            rs.getObject("customer_id", UUID.class),
+            rs.getBigDecimal("total_amount"),
+            rs.getString("order_status"),
+            rs.getString("payment_status")
+        ),customerId);
+        return ResponseEntity.ok(orders);
+    }
+    
 }

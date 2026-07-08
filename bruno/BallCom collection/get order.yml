@@ -1,11 +1,11 @@
 info:
   name: get order
   type: http
-  seq: 2
+  seq: 1
 
 http:
   method: POST
-  url: http://localhost:8080/api/orders
+  url: http://localhost:8080/orders
   body:
     type: json
     data: |-

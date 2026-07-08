@@ -1,7 +1,7 @@
-package com.ballcom.customer.api.dto;
+// package com.ballcom.customer.api.dto;
 
-import java.util.UUID;
+// import java.util.UUID;
 
-public record CustomerRegisteredResponse(UUID id) {
+// public record CustomerRegisteredResponse(UUID id) {
     
-}
+// }
