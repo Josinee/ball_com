@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.ballcom.payment.domain.PaymentAggregate;
 import com.ballcom.payment.domain.PaymentMethod;
-import com.ballcom.payment.domain.PaymentStatus;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 import java.util.List;

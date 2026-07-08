@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ballcom.payment.application.CompletePaymentCommand;
 import com.ballcom.payment.application.PaymentCommandHandler;
 import com.ballcom.payment.application.ProcessPaymentCommand;
 import com.ballcom.payment.application.RegisterDeliveryCommand;

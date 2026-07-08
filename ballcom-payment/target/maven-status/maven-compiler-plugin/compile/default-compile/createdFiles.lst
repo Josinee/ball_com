@@ -3,6 +3,7 @@ com\ballcom\payment\infrastructure\messaging\PaymentEventPublisher.class
 com\ballcom\payment\domain\PaymentStatus.class
 com\ballcom\payment\infrastructure\messaging\PaymentRabbitConfig.class
 com\ballcom\payment\api\PaymentCommandController.class
+com\ballcom\payment\application\RegisterDeliveryCommand.class
 com\ballcom\payment\domain\PaymentStatus$1.class
 com\ballcom\payment\infrastructure\persistence\PostgresEventStore.class
 com\ballcom\payment\application\FailPaymentCommand.class
@@ -15,4 +16,5 @@ com\ballcom\payment\domain\PaymentAggregate.class
 com\ballcom\payment\domain\PaymentStatus$3.class
 com\ballcom\payment\infrastructure\persistence\PostgresEventStore$1.class
 com\ballcom\payment\infrastructure\messaging\PaymentEventListener.class
+com\ballcom\payment\domain\PaymentStatus$4.class
 com\ballcom\payment\domain\PaymentMethod.class

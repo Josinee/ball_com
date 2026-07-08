@@ -7,16 +7,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shipment.application.ShipmentCommandHandler;
-import com.ballcom.shipment.application.dto.DeliverOrderCommand;
 import com.ballcom.shipment.application.dto.InitiateShipmentCommand;
 import com.ballcom.shipment.application.dto.OrderPickingCommand;
-import com.ballcom.shipment.application.dto.ShipOrderCommand;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 
 

@@ -10,9 +10,10 @@
     <packaging>pom</packaging>
 
     <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.5</version> </parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.16</version> <relativePath/>
+    </parent>
 
     <modules>
         <module>ballcom-shared</module>
@@ -22,7 +23,6 @@
         <module>ballcom-payment</module>
         <module>ballcom-customer</module>
         <module>ballcom-shipment</module>
-
     </modules>
 
     <properties>
@@ -34,22 +34,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.2</version>
-                <type>pom</type>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2024.0.0</version> <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-       
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>2023.0.0</version> <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-
-        
+        </dependencies>
     </dependencyManagement>
 </project>

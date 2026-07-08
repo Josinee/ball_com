@@ -1,0 +1,15 @@
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogCommandController.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogImportController.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogQueryController.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogCreatedResponse.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogCreateRequest.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogViewResponse.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\application\CatalogCommandHandler.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\application\CreateCatalogCommand.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\CatalogApplication.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\domain\CatalogAggregate.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\importer\CatalogImportService.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\CatalogProjectionHandler.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\OrderRabbitConfig.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\RabbitEventPublisher.java
+C:\dev\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\persistence\PostgresEventStore.java
