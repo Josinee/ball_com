@@ -11,7 +11,6 @@ import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 import com.ballcom.shipment.application.commands.DeliverShipmentCommand;
 import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
-import com.ballcom.shipment.application.commands.OrderPickingCommand;
 import com.ballcom.shipment.application.commands.ReleaseShipmentToWarehouse;
 import com.ballcom.shipment.application.commands.ShipShipmentCommand;
 import com.ballcom.shipment.domain.ShipmentAggregate;

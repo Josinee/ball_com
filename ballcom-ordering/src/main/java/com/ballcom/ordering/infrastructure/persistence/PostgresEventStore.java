@@ -92,7 +92,6 @@ public class PostgresEventStore implements EventStore {
             try {
                 UUID eventId = UUID.fromString(rs.getString("id"));
                 UUID aggId = UUID.fromString(rs.getString("aggregate_id"));
-                String aggegateType = rs.getString("aggregate_type");
                 long sequenceNumber = rs.getLong("sequence_number");
                 EventType eventType = EventType.valueOf(rs.getString("event_type"));
                 Instant occurredAt = rs.getTimestamp("occurred_at").toInstant();

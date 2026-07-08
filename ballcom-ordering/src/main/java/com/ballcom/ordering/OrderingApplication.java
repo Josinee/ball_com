@@ -10,4 +10,4 @@ public class OrderingApplication {
     public static void main(String[] args) {
         SpringApplication.run(OrderingApplication.class, args);
     }
-}//TODO reageert nog niet op shipment dingen, staat als het delivered is op order status PLACED wat niet klopt, er is een orderStatus shipped en delivered
+}

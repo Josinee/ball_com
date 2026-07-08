@@ -24,7 +24,7 @@ public class CustomerRabbitConfig {
     }
 
     @Bean
-    public Binding customerBinding(Queue customerQueue, TopicExchange customerExchange) { //TODO wat is dit wat doet het
+    public Binding customerBinding(Queue customerQueue, TopicExchange customerExchange) {
         return BindingBuilder.bind(customerQueue).to(customerExchange).with("customer.#");
     }
 }

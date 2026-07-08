@@ -1,6 +1,5 @@
 package com.ballcom.ordering.infrastructure.messaging;
 
-import com.ballcom.ordering.domain.OrderStatus;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 
@@ -33,7 +32,7 @@ public class OrderEventListener {
             String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
             int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
             if(rowsAffected == 0) {
-                System.out.println("Event " + event.eventId() + "al eerder verwerkt"); //TODO engels?
+                System.out.println("Event " + event.eventId() + "al eerder verwerkt");
                 return;
             }
                 Map<String, Object> payload = (Map<String, Object>) event.payload();

@@ -1,9 +1,7 @@
 package com.ballcom.customer.infrastructure.messaging;
 
-import com.ballcom.customer.domain.valueobject.Address;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Timestamp;
 import java.util.Map;
@@ -29,11 +27,11 @@ public class CustomerProjectionHandler {
             String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
             int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
             if(rowsAffected == 0) {
-                System.out.println("Event " + event.eventId() + "al eerder verwerkt"); //TODO engels?
+                System.out.println("Event " + event.eventId() + "al eerder verwerkt");
                 return;
             }
         
-            System.out.println("CONSUMER: Event ontvangen in de read-kant! Type: " + event.eventType()); // TODO engels?
+            System.out.println("CONSUMER: Event ontvangen in de read-kant! Type: " + event.eventType());
             
             if (EventType.CUSTOMER_REGISTERED.equals(event.eventType())) {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();

@@ -2,19 +2,15 @@ package com.ballcom.catalog.infrastructure.messaging;
 
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.UUID;
 
-import com.ballcom.shared.events.EventType;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
-import com.ballcom.shared.events.GenericDomainEvent;
 
 @Component
 public class CatalogProjectionHandler {
