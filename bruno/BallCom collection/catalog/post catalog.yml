@@ -1,0 +1,26 @@
+info:
+  name: post catalog
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/api/catalogs
+  body:
+    type: json
+    data: |-
+      {
+        "itemName": "Philips Airfryer XXL",
+        "price": "199.99",
+        "description": "Large air fryer from trusted supplier Philips",
+        "category": "Kitchen",
+        "availability": "IN_STOCK",
+        "owner": "PHILIPS"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
