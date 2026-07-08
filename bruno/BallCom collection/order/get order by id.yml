@@ -1,0 +1,15 @@
+info:
+  name: get order by id
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:8080/orders/56986427-b908-4919-98fc-1480f6206324
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

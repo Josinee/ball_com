@@ -1,0 +1,31 @@
+info:
+  name: post order invalid customer
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/orders/placeorder
+  body:
+    type: json
+    data: |-
+      {
+        "customerId": "00000000-0000-0000-0000-000000000000",
+        "paymentMethod": "PREPAY",
+        "items": [
+          { 
+            "productId": "957f7958-4dcb-4b78-9b7f-819e2a36f6a5", 
+            "quantity": 1,
+            "unitPrice": 15.50
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+  # verwacht 400 Bad Request
