@@ -51,6 +51,19 @@ services:
       - catalog_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/catalog:/docker-entrypoint-initdb.d
 
+  postgres-customer:
+    image: postgres:16
+    container_name: postgres-customer
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5459:5432"
+    volumes:
+      - customer_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/customer:/docker-entrypoint-initdb.d
+
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: ballcom-rabbitmq
@@ -66,3 +79,4 @@ volumes:
   payment_postgres_data:
   shipment_postgres_data:
   catalog_postgres_data:
+  customer_postgres_data:

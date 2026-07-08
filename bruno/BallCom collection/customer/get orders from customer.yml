@@ -1,11 +1,11 @@
 info:
-  name: registerUser
+  name: get orders from customer
   type: http
   seq: 4
 
 http:
-  method: POST
-  url: http://localhost:8080/customers
+  method: GET
+  url: http://localhost:8080/orders/customer/{{customerId}}
   auth: inherit
 
 settings:

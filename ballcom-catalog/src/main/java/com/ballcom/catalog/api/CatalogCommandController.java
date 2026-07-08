@@ -15,7 +15,7 @@ import com.ballcom.catalog.application.commands.CreateCatalogCommand;
 
 
 @RestController
-@RequestMapping("/api/catalogs")
+@RequestMapping("/catalogs")
 public class CatalogCommandController {
     private final CatalogCommandHandler commandHandler;
 

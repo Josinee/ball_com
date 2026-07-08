@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ballcom.catalog.api.dto.CatalogViewResponse;
 
 @RestController
-@RequestMapping("/api/catalog")
+@RequestMapping("/catalog")
 public class CatalogQueryController {
     private final JdbcTemplate jdbcTemplate;
 
