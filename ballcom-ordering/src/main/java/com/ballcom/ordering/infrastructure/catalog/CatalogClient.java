@@ -20,7 +20,7 @@ public class CatalogClient {
     public CatalogItemResponse getCatalogItem(UUID productId) {
         try {
             return restClient.get()
-                    .uri("/api/catalog/{productId}", productId)
+                    .uri("/catalog/{productId}", productId)
                     .retrieve()
                     .body(CatalogItemResponse.class);
         } catch (RestClientResponseException e) {

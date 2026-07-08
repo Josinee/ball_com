@@ -20,7 +20,7 @@ public class CustomerClient {
     public boolean customerExists(UUID customerId) {
         try {
             restClient.get()
-                    .uri("/api/customers/{customerId}", customerId)
+                    .uri("/customers/{customerId}", customerId)
                     .retrieve()
                     .toBodilessEntity();
 

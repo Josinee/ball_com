@@ -23,6 +23,26 @@ public class OrderQueryController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    //alle orders ophalen
+    @GetMapping
+    public ResponseEntity<List<OrderViewResponse>> getAllCatalogItems() {
+        String sql = """
+            SELECT order_id, customer_id, total_amount, order_status, payment_status FROM order_views ORDER BY order_id
+                """;
+
+                List<OrderViewResponse> orderView = jdbcTemplate.query(sql, (rs, rowNum) ->
+                new OrderViewResponse(
+                UUID.fromString(rs.getString("order_id")),
+                    UUID.fromString(rs.getString("customer_id")),
+                    rs.getBigDecimal("total_amount"),
+                    rs.getString("order_status"),
+                    rs.getString("payment_status")
+            )
+        );
+
+        return ResponseEntity.ok(orderView);
+    }
+
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderViewResponse> getOrderById(@PathVariable UUID orderId) {
         String sql = "SELECT order_id, customer_id, total_amount, order_status, payment_status FROM order_views WHERE order_id = ?";
