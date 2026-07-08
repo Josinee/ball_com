@@ -1,5 +1,7 @@
 package com.ballcom.catalog.infrastructure.importer;
 
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
+@Service
 public class CatalogImportService {
 
     private JdbcTemplate jdbcTemplate;

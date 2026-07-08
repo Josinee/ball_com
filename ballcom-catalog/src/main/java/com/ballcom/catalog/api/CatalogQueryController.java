@@ -31,7 +31,7 @@ public class CatalogQueryController {
                 UUID.fromString(rs.getString("catalog_id")),
                 rs.getString("item_name"),
                 rs.getString("price"),
-                rs.getString("decription"),
+                rs.getString("description"),
                 rs.getString("category"),
                 rs.getString("availability"),
                 rs.getString("owner")

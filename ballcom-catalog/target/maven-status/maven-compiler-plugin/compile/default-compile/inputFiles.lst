@@ -1,0 +1,15 @@
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\CatalogProjectionHandler.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogQueryController.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\application\CreateCatalogCommand.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\domain\CatalogAggregate.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\RabbitEventPublisher.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\importer\CatalogImportService.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogCreateRequest.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogViewResponse.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogImportController.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\dto\CatalogCreatedResponse.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\CatalogApplication.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\api\CatalogCommandController.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\application\CatalogCommandHandler.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\messaging\OrderRabbitConfig.java
+C:\Users\fleur\Documents\SolutionArchitecture\ball_com\ballcom-catalog\src\main\java\com\ballcom\catalog\infrastructure\persistence\PostgresEventStore.java

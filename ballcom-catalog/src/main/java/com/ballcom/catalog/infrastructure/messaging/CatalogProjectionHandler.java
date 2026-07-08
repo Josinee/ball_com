@@ -65,7 +65,7 @@ public class CatalogProjectionHandler {
                 description = EXCLUDED.description,
                 category = EXCLUDED.category,
                 availability = EXCLUDED.availability,
-                owner = EXLUDED.owner,
+                owner = EXCLUDED.owner,
                 updated_at = EXCLUDED.updated_at
                 """;
 

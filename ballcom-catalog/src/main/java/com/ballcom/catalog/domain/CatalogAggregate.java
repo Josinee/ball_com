@@ -36,7 +36,7 @@ public class CatalogAggregate extends AggregateRoot{
             "price", price,
             "category", category, 
             "description", description,
-            "availabilty", availability,
+            "availability", availability,
             "owner", owner
         );
 
