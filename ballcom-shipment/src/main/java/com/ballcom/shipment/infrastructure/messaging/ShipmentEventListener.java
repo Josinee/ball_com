@@ -1,6 +1,5 @@
 package com.ballcom.shipment.infrastructure.messaging;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shipment.application.ShipmentCommandHandler;
 import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
-import com.ballcom.shipment.application.commands.OrderPickingCommand;
+import com.ballcom.shipment.application.commands.ReleaseShipmentToWarehouse;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 
 
@@ -100,16 +99,17 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
         //betaling voldaan(prepay) of betaling afwachten(afterpay) gaan beide naar picking
         if (EventType.PAYMENT_COMPLETED.equals(event.eventType()) || EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
         System.out.println("SHIPMENT SAGA: Groen licht ontvangen via " + event.eventType() + " voor order " + orderId + ". Vrijgeven aan magazijn.");
-        
+        UUID shipmentId = jdbcTemplate.queryForObject(
+            "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?", UUID.class, orderId
+        );
         // Stuur één en hetzelfde commando naar de handler
-        var command = new OrderPickingCommand(orderId);
+        var command = new ReleaseShipmentToWarehouse(shipmentId);
         commandHandler.handleReleaseToWarehouse(command);
 
         // Update het Read Model naar PICKING
-        String viewSql = "UPDATE shipment_views SET status = 'PICKING', updated_at = ? WHERE order_id = ?";
-        jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), orderId);
+        String viewSql = "UPDATE shipment_views SET status = 'PICKING', updated_at = ? WHERE shipment_id = ?";
+        jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), shipmentId);
         
-        System.out.println("SHIPMENT VIEW: Status bijgewerkt naar PICKING voor order: " + orderId);
     }
     }
 

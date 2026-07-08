@@ -2,6 +2,6 @@ package com.ballcom.shipment.application.commands;
 
 import java.util.UUID;
 
-public record ShipOrderCommand(UUID orderId) {
+public record ShipShipmentCommand(UUID orderId) {
     
 }

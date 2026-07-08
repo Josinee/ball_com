@@ -4,8 +4,8 @@ C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\api\Customer
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\api\dto\CustomerRegisteredResponse.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\api\dto\CustomerRegisterRequest.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\api\dto\CustomerViewResponse.java
+C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\application\commands\RegisterCustomerCommand.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\application\CustomerCommandHandler.java
-C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\application\RegisterCustomerCommand.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\CustomerApplication.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\domain\CustomerAggregate.java
 C:\dev\ball_com\ballcom-customer\src\main\java\com\ballcom\customer\domain\valueobject\Address.java

@@ -5,11 +5,11 @@ com\ballcom\catalog\api\CatalogQueryController.class
 com\ballcom\catalog\domain\CatalogAggregate.class
 com\ballcom\catalog\infrastructure\messaging\CatalogProjectionHandler.class
 com\ballcom\catalog\infrastructure\messaging\OrderRabbitConfig.class
+com\ballcom\catalog\application\commands\CreateCatalogCommand.class
 com\ballcom\catalog\application\CatalogCommandHandler.class
 com\ballcom\catalog\infrastructure\importer\CatalogImportService.class
 com\ballcom\catalog\api\dto\CatalogViewResponse.class
 com\ballcom\catalog\infrastructure\messaging\RabbitEventPublisher.class
 com\ballcom\catalog\CatalogApplication.class
 com\ballcom\catalog\api\CatalogImportController.class
-com\ballcom\catalog\application\CreateCatalogCommand.class
 com\ballcom\catalog\infrastructure\persistence\PostgresEventStore.class

@@ -5,9 +5,9 @@ C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\Plac
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\dto\PlaceOrderRequest.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\OrderCommandController.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\api\OrderQueryController.java
-C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\ConfirmOrderPaymentCommand.java
+C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\commands\ConfirmOrderPaymentCommand.java
+C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\commands\PlaceOrderCommand.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\OrderCommandHandler.java
-C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\application\PlaceOrderCommand.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\OrderAggregate.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\OrderItem.java
 C:\dev\ball_com\ballcom-ordering\src\main\java\com\ballcom\ordering\domain\OrderStatus.java
