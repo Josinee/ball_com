@@ -1,7 +1,7 @@
 info:
   name: Bad payment flows
   type: folder
-  seq: 8
+  seq: 3
 
 request:
   auth: inherit
