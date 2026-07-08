@@ -1,17 +1,17 @@
 Item Name,Price,Description,Category,Availability,Owner
-Wireless Mouse,25,Ergonomic wireless mouse with USB receiver,Electronics,IN_STOCK,BALLCOM
-Bluetooth Speaker,45,Portable speaker with rich sound,Electronics,IN_STOCK,BALLCOM
+Wireless Mouse,25,Ergonomic wireless mouse with USB receiver,Electronics,IN_STOCK,PHILIPS
+Bluetooth Speaker,45,Portable speaker with rich sound,Electronics,IN_STOCK,PHILIPS
 Coffee Mug,8,Ceramic mug for hot beverages,Kitchen,IN_STOCK,BALLCOM
 Notebook,5,Lined notebook for notes and journaling,Office,IN_STOCK,BALLCOM
-Mechanical Keyboard,75,RGB backlit mechanical keyboard,Electronics,IN_STOCK,BALLCOM
+Mechanical Keyboard,75,RGB backlit mechanical keyboard,Electronics,IN_STOCK,PHILIPS
 Water Bottle,15,Reusable stainless steel water bottle,Fitness,IN_STOCK,BALLCOM
 Running Shoes,80,Comfortable shoes for daily running,Fitness,IN_STOCK,BALLCOM
 Yoga Mat,20,Non-slip exercise mat,Fitness,IN_STOCK,BALLCOM
 Desk Lamp,30,LED desk lamp with adjustable brightness,Home,IN_STOCK,BALLCOM
 Phone Charger,18,Fast charging USB-C wall charger,Electronics,IN_STOCK,BALLCOM
 Power Bank,35,10000mAh portable battery pack,Electronics,IN_STOCK,BALLCOM
-Gaming Headset,60,Surround sound headset with microphone,Electronics,IN_STOCK,BALLCOM
-Smart Watch,150,Fitness tracking smartwatch,Electronics,IN_STOCK,BALLCOM
+Gaming Headset,60,Surround sound headset with microphone,Electronics,IN_STOCK,SAMSUNG
+Smart Watch,150,Fitness tracking smartwatch,Electronics,IN_STOCK,SAMSUNG
 Cookware Set,95,10-piece non-stick cookware set,Kitchen,IN_STOCK,BALLCOM
 Pillow,22,Soft memory foam sleeping pillow,Home,IN_STOCK,BALLCOM
 Blanket,35,Warm fleece blanket for all seasons,Home,IN_STOCK,BALLCOM
@@ -21,7 +21,7 @@ Air Fryer,120,Healthy cooking with little oil,Kitchen,IN_STOCK,BALLCOM
 Vacuum Cleaner,180,Powerful bagless vacuum cleaner,Home,IN_STOCK,BALLCOM
 Wall Clock,22,Modern silent wall clock,Home,IN_STOCK,BALLCOM
 Picture Frame,16,Wooden frame for photos,Home,IN_STOCK,BALLCOM
-USB Flash Drive,12,64GB high-speed storage device,Electronics,IN_STOCK,BALLCOM
+USB Flash Drive,12,64GB high-speed storage device,Electronics,IN_STOCK,SAMSUNG
 External Hard Drive,85,2TB portable backup drive,Electronics,IN_STOCK,BALLCOM
 Wireless Earbuds,70,Noise-isolating Bluetooth earbuds,Electronics,IN_STOCK,BALLCOM
 Fitness Tracker,55,Track steps heart rate and sleep,Fitness,IN_STOCK,BALLCOM
@@ -32,11 +32,11 @@ Flashlight,15,Rechargeable LED flashlight,Outdoor,IN_STOCK,BALLCOM
 Office Chair,140,Ergonomic chair with lumbar support,Furniture,IN_STOCK,BALLCOM
 Standing Desk,320,Height adjustable standing desk,Furniture,IN_STOCK,BALLCOM
 Bookshelf,90,Five-tier wooden bookshelf,Furniture,IN_STOCK,BALLCOM
-Hair Dryer,35,Compact hair dryer with multiple settings,Beauty,IN_STOCK,BALLCOM
-Shampoo Set,18,Nourishing shampoo and conditioner,Beauty,IN_STOCK,BALLCOM
-Perfume,55,Fresh long-lasting fragrance,Beauty,IN_STOCK,BALLCOM
-Lip Balm,4,Moisturizing lip care stick,Beauty,IN_STOCK,BALLCOM
-Face Cream,24,Hydrating daily moisturizer,Beauty,IN_STOCK,BALLCOM
+Hair Dryer,35,Compact hair dryer with multiple settings,Beauty,IN_STOCK,FLEURSCASES
+Shampoo Set,18,Nourishing shampoo and conditioner,Beauty,IN_STOCK,FLEURSCASES
+Perfume,55,Fresh long-lasting fragrance,Beauty,IN_STOCK,FLEURSCASES
+Lip Balm,4,Moisturizing lip care stick,Beauty,IN_STOCK,FLEURSCASES
+Face Cream,24,Hydrating daily moisturizer,Beauty,IN_STOCK,FLEURSCASES
 Pet Bed,45,Soft comfortable bed for pets,Pet Supplies,IN_STOCK,BALLCOM
 Dog Leash,15,Durable adjustable dog leash,Pet Supplies,IN_STOCK,BALLCOM
 Cat Toy,8,Interactive toy for indoor cats,Pet Supplies,IN_STOCK,BALLCOM

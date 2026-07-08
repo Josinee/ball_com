@@ -1,5 +1,6 @@
 package com.ballcom.catalog.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,6 +22,31 @@ public class CatalogQueryController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    //alle item van catalog ophalen
+    @GetMapping
+    public ResponseEntity<List<CatalogViewResponse>> getAllCatalogItems() {
+        String sql = """
+            SELECT catalog_id, item_name, price, description, category, availability, owner
+            FROM catalog_views
+            ORDER BY item_name
+                """;
+
+                List<CatalogViewResponse> catalogItems = jdbcTemplate.query(sql, (rs, rowNum) ->
+                new CatalogViewResponse(
+                UUID.fromString(rs.getString("catalog_id")),
+                rs.getString("item_name"),
+                rs.getString("price"),
+                rs.getString("description"),
+                rs.getString("category"),
+                rs.getString("availability"),
+                rs.getString("owner")
+            )
+        );
+
+        return ResponseEntity.ok(catalogItems);
+    }
+
+    //1 item ophalen
     @GetMapping("/{catalogId}")
     public ResponseEntity<CatalogViewResponse> getCatalogById(@PathVariable UUID catalogId) {
         String sql = "SELECT catalog_id, item_name, price, description, category, availability, owner FROM catalog_views WHERE catalog_id = ?";
