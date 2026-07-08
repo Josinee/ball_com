@@ -1,9 +1,10 @@
+C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\api\dto\PaymentMadeCommand.java
 C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\api\PaymentCommandController.java
-C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\CompletePaymentCommand.java
-C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\FailPaymentCommand.java
+C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\commands\CompletePaymentCommand.java
+C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\commands\FailPaymentCommand.java
+C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\commands\ProcessPaymentCommand.java
+C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\commands\RegisterDeliveryCommand.java
 C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\PaymentCommandHandler.java
-C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\ProcessPaymentCommand.java
-C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\application\RegisterDeliveryCommand.java
 C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\domain\PaymentAggregate.java
 C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\domain\PaymentMethod.java
 C:\dev\ball_com\ballcom-payment\src\main\java\com\ballcom\payment\domain\PaymentState.java

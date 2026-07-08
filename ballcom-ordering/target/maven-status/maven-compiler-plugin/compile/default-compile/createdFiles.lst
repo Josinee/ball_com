@@ -1,11 +1,11 @@
+com\ballcom\ordering\application\commands\ConfirmOrderPaymentCommand.class
 com\ballcom\ordering\api\dto\OrderAcceptedResponse.class
-com\ballcom\ordering\application\PlaceOrderCommand$OrderItemData.class
 com\ballcom\ordering\domain\OrderAggregate.class
 com\ballcom\ordering\infrastructure\persistence\PostgresEventStore.class
 com\ballcom\ordering\application\OrderCommandHandler.class
 com\ballcom\ordering\api\OrderCommandController.class
 com\ballcom\ordering\infrastructure\messaging\OrderRabbitConfig.class
-com\ballcom\ordering\application\PlaceOrderCommand.class
+com\ballcom\ordering\application\commands\PlaceOrderCommand.class
 com\ballcom\ordering\OrderingApplication.class
 com\ballcom\ordering\infrastructure\persistence\PostgresEventStore$1.class
 com\ballcom\ordering\api\dto\PlaceOrderRequest.class
@@ -15,7 +15,7 @@ com\ballcom\ordering\api\dto\PlaceOrderItemRequest.class
 com\ballcom\ordering\infrastructure\messaging\OrderEventPublisher.class
 com\ballcom\ordering\api\dto\OrderItemResponse.class
 com\ballcom\ordering\infrastructure\messaging\OrderEventListener.class
+com\ballcom\ordering\application\commands\PlaceOrderCommand$OrderItemData.class
 com\ballcom\ordering\api\OrderQueryController.class
-com\ballcom\ordering\application\ConfirmOrderPaymentCommand.class
 com\ballcom\ordering\domain\PaymentStatus.class
 com\ballcom\ordering\domain\OrderStatus.class

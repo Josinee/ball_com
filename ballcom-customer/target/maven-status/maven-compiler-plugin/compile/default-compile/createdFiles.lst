@@ -1,9 +1,9 @@
+com\ballcom\customer\application\commands\RegisterCustomerCommand.class
 com\ballcom\customer\infrastructure\persistence\PostgresEventStore$1.class
 com\ballcom\customer\domain\valueobject\Address.class
 com\ballcom\customer\api\CustomerCommandController.class
 com\ballcom\customer\api\dto\CustomerRegisteredResponse.class
 com\ballcom\customer\application\CustomerCommandHandler.class
-com\ballcom\customer\application\RegisterCustomerCommand.class
 com\ballcom\customer\infrastructure\messaging\CustomerRabbitConfig.class
 com\ballcom\customer\infrastructure\messaging\RabbitEventPublisher.class
 com\ballcom\customer\api\CustomerQueryController.class
