@@ -31,7 +31,8 @@ public class CatalogCommandController {
                 request.price(),
                 request.description(),
                 request.category(),
-                request.availability()
+                request.availability(),
+                request.owner()
         );
         
         UUID catalogId = commandHandler.handle(command);

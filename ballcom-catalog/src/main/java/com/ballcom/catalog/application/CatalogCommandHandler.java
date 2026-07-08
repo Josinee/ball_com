@@ -21,7 +21,7 @@ public class CatalogCommandHandler {
     @Transactional
     public UUID handle(CreateCatalogCommand command){
          
-        CatalogAggregate catalog = CatalogAggregate.create(command.itemName(), command.price(), command.category(), command.description(), command.availability());
+        CatalogAggregate catalog = CatalogAggregate.create(command.itemName(), command.price(), command.category(), command.description(), command.availability(), command.owner());
 
         eventStore.append(catalog.getId(), catalog.getUncommitedEvents(), 0);
         catalog.clearUncommitedEvents();

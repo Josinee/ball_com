@@ -23,7 +23,7 @@ public class CatalogQueryController {
 
     @GetMapping("/{catalogId}")
     public ResponseEntity<CatalogViewResponse> getCatalogById(@PathVariable UUID catalogId) {
-        String sql = "SELECT catalog_id, item_name, price, description, category, availability FROM catalog_views WHERE catalog_id = ?";
+        String sql = "SELECT catalog_id, item_name, price, description, category, availability, owner FROM catalog_views WHERE catalog_id = ?";
 
         try {
             CatalogViewResponse catalogView = jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
@@ -33,7 +33,8 @@ public class CatalogQueryController {
                 rs.getString("price"),
                 rs.getString("decription"),
                 rs.getString("category"),
-                rs.getString("availability")
+                rs.getString("availability"),
+                rs,getString("owner")
                 ),
                 catalogId
 

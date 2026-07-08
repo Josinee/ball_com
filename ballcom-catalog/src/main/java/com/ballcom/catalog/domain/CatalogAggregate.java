@@ -20,13 +20,14 @@ public class CatalogAggregate extends AggregateRoot{
     private String description;
     private String category;
     private String availability;
+    private String owner;
 
 
 
     public CatalogAggregate() {}
     
     //business logica, als alles mag worden er geen velden veranderd, alleen event aangemaakt
-    public static CatalogAggregate create(String itemName, String price, String category, String description, String availability) {
+    public static CatalogAggregate create(String itemName, String price, String category, String description, String availability, String owner) {
         UUID catalogId = UUID.randomUUID();
         CatalogAggregate catalog = new CatalogAggregate();
         catalog.id = catalogId;
@@ -35,7 +36,8 @@ public class CatalogAggregate extends AggregateRoot{
             "price", price,
             "category", category, 
             "description", description,
-            "availabilty", availability
+            "availabilty", availability,
+            "owner", owner
         );
 
      
@@ -58,7 +60,8 @@ public class CatalogAggregate extends AggregateRoot{
             this.price = (String) payload.get("price");
             this.category = (String) payload.get("category");
             this.description = (String) payload.get("description");
-            this.availability = (String) payload.get("availability");;
+            this.availability = (String) payload.get("availability");
+            this.owner = (String) payload.get("owner");
         }
         this.sequenceNumber = event.sequenceNumber();
     }

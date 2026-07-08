@@ -8,6 +8,7 @@ public record CatalogViewResponse (
     String price,
     String description,
     String category,
-    String availability
+    String availability,
+    String owner
 )
 {}
