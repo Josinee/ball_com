@@ -3,7 +3,7 @@ package com.ballcom.ordering.api;
 import com.ballcom.ordering.api.dto.OrderAcceptedResponse;
 import com.ballcom.ordering.api.dto.PlaceOrderRequest;
 import com.ballcom.ordering.application.OrderCommandHandler;
-import com.ballcom.ordering.application.PlaceOrderCommand;
+import com.ballcom.ordering.application.commands.PlaceOrderCommand;
 import com.ballcom.shared.ErrorResponse;
 
 import org.springframework.http.HttpStatus;

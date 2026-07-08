@@ -1,4 +1,4 @@
-package com.ballcom.ordering.application;
+package com.ballcom.ordering.application.commands;
 
 import java.math.BigDecimal;
 import java.util.List;

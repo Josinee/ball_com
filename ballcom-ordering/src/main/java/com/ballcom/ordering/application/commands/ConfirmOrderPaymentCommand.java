@@ -1,4 +1,4 @@
-package com.ballcom.ordering.application;
+package com.ballcom.ordering.application.commands;
 
 import java.util.UUID;
 

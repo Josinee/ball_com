@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.payment.application.PaymentCommandHandler;
-import com.ballcom.payment.application.ProcessPaymentCommand;
-import com.ballcom.payment.application.RegisterDeliveryCommand;
+import com.ballcom.payment.application.commands.ProcessPaymentCommand;
+import com.ballcom.payment.application.commands.RegisterDeliveryCommand;
 import com.ballcom.payment.domain.PaymentMethod;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 

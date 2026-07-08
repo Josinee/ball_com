@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ballcom.shipment.application.ShipmentCommandHandler;
-import com.ballcom.shipment.application.dto.InitiateShipmentCommand;
-import com.ballcom.shipment.application.dto.OrderPickingCommand;
+import com.ballcom.shipment.application.commands.InitiateShipmentCommand;
+import com.ballcom.shipment.application.commands.OrderPickingCommand;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent; 
 

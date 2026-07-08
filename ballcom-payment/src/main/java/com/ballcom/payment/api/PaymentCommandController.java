@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ballcom.payment.application.CompletePaymentCommand;
-import com.ballcom.payment.application.FailPaymentCommand;
+import com.ballcom.payment.api.dto.PaymentMadeCommand;
 import com.ballcom.payment.application.PaymentCommandHandler;
+import com.ballcom.payment.application.commands.CompletePaymentCommand;
+import com.ballcom.payment.application.commands.FailPaymentCommand;
 import com.ballcom.shared.ErrorResponse;
 
 
@@ -40,8 +41,8 @@ public class PaymentCommandController{
             
             var command = new CompletePaymentCommand(orderId);
 
-            commandHandler.handle(command);
-            return ResponseEntity.accepted().body("Payment made");
+            UUID paymentId = commandHandler.handle(command);
+            return ResponseEntity.accepted().body(new PaymentMadeCommand(paymentId)); 
             
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)

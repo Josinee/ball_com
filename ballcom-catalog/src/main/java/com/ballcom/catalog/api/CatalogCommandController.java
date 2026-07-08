@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ballcom.catalog.api.dto.CatalogCreateRequest;
 import com.ballcom.catalog.api.dto.CatalogCreatedResponse;
 import com.ballcom.catalog.application.CatalogCommandHandler;
-import com.ballcom.catalog.application.CreateCatalogCommand;
+import com.ballcom.catalog.application.commands.CreateCatalogCommand;
 
 
 @RestController

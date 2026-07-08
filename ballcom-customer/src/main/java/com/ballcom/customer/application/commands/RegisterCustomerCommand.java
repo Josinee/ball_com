@@ -1,4 +1,4 @@
-package com.ballcom.customer.application;
+package com.ballcom.customer.application.commands;
 
 
 public record RegisterCustomerCommand(

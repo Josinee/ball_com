@@ -4,6 +4,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ballcom.payment.application.commands.CompletePaymentCommand;
+import com.ballcom.payment.application.commands.FailPaymentCommand;
+import com.ballcom.payment.application.commands.ProcessPaymentCommand;
+import com.ballcom.payment.application.commands.RegisterDeliveryCommand;
 import com.ballcom.payment.domain.PaymentAggregate;
 import com.ballcom.payment.domain.PaymentMethod;
 import com.ballcom.shared.events.GenericDomainEvent;
@@ -61,7 +66,7 @@ public class PaymentCommandHandler {
      * of wanneer een AFTERPAY order succesvol is bezorgd en de factuur is voldaan.
      */
     @Transactional
-    public void handle(CompletePaymentCommand command) {
+    public UUID handle(CompletePaymentCommand command) {
         // 1. Zoek de actieve betaling op basis van de ORDER ID uit het command
         String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
         UUID paymentId;
@@ -81,6 +86,7 @@ public class PaymentCommandHandler {
 
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
+        return payment.getId();
     }
 
     /**

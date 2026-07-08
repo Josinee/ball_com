@@ -1,4 +1,4 @@
-package com.ballcom.shipment.application.dto;
+package com.ballcom.shipment.application.commands;
 
 import java.util.UUID;
 
