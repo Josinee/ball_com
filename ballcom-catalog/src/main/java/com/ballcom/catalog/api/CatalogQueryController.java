@@ -34,7 +34,7 @@ public class CatalogQueryController {
                 rs.getString("decription"),
                 rs.getString("category"),
                 rs.getString("availability"),
-                rs,getString("owner")
+                rs.getString("owner")
                 ),
                 catalogId
 
