@@ -1,5 +1,6 @@
 package com.ballcom.ordering.infrastructure.messaging;
 
+import com.ballcom.ordering.domain.OrderStatus;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 
@@ -82,10 +83,10 @@ public class OrderEventListener {
             }
         
             System.out.println("CONSUMER: Event received in read model! Type: " + event.eventType());
-            
+            Map<String, Object> payload = (Map<String, Object>) event.payload();
             if (EventType.ORDER_PLACED.equals(event.eventType())) {
                 try {
-                    Map<String, Object> payload = (Map<String, Object>) event.payload();
+                    
 
                     UUID orderId = event.aggregateId();
                     UUID customerId = UUID.fromString((String) payload.get("customerId"));
@@ -117,40 +118,22 @@ public class OrderEventListener {
                     System.err.println("Error processing order event: " + e.getMessage());
                     e.printStackTrace();
                 }
-            } else if (EventType.SHIPMENT_SHIPPED.equals(event.eventType())) {
+            } else if (EventType.SHIPMENT_SHIPPED.equals(event.eventType()) || EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
                 try {
-                    UUID shipmentId = event.aggregateId();
+                                        
+                    UUID orderId = UUID.fromString(payload.get("orderId").toString());
+                    String statusStr = payload.get("status").toString();
+
+                    String sqlUpdate = "UPDATE order_views SET order_status = ?, updated_at = ? WHERE order_id = ?";
+                    jdbcTemplate.update(sqlUpdate, statusStr, Timestamp.from(event.occurredAt()), orderId);
                     
-                    String sqlMapping = "SELECT order_id FROM order_shipment_mapping WHERE shipment_id = ?";
-                    UUID orderId = jdbcTemplate.queryForObject(sqlMapping, UUID.class, shipmentId);
-                    
-                    String sqlUpdate = "UPDATE order_views SET order_status = 'SHIPPED', updated_at = ? WHERE order_id = ?";
-                    jdbcTemplate.update(sqlUpdate, Timestamp.from(event.occurredAt()), orderId);
-                    
-                    System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als SHIPPED.");
+                    System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als " + statusStr);
                 } catch (Exception e) {
                     System.err.println("Error processing shipment shipped event: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
             
-
-            else if (EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
-                try {
-                    UUID shipmentId = event.aggregateId();
-                    
-                    String sqlMapping = "SELECT order_id FROM order_shipment_mapping WHERE shipment_id = ?";
-                    UUID orderId = jdbcTemplate.queryForObject(sqlMapping, UUID.class, shipmentId);
-                    
-                    String sqlUpdate = "UPDATE order_views SET order_status = 'DELIVERED', updated_at = ? WHERE order_id = ?";
-                    jdbcTemplate.update(sqlUpdate, Timestamp.from(event.occurredAt()), orderId);
-                    
-                    System.out.println("READ MODEL: Order " + orderId + " gemarkeerd als DELIVERED.");
-                } catch (Exception e) {
-                    System.err.println("Error processing shipment delivered event: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
         } catch (Exception e) {
             System.err.println("Error in event consumer: " + e.getMessage());
             e.printStackTrace();
