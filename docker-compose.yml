@@ -1,5 +1,4 @@
 services:
-  # 1. De Database
   postgres-ordering:
     image: postgres:16
     container_name: postgres-ordering
@@ -12,20 +11,6 @@ services:
     volumes:
       - ordering_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/ordering:/docker-entrypoint-initdb.d
-
-
-  postgres-shipment:
-    image: postgres:16
-    container_name: postgres-shipment
-    environment:
-      POSTGRES_DB: shipment_db
-      POSTGRES_USER: ball_admin
-      POSTGRES_PASSWORD: supersecretpassword
-    ports:
-      - "5457:5432"
-    volumes:
-      - shipment_postgres_data:/var/lib/postgresql/data
-      - ./init-scripts/shipment:/docker-entrypoint-initdb.d
 
   postgres-payment:
     image: postgres:16
@@ -40,29 +25,44 @@ services:
       - payment_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/payment:/docker-entrypoint-initdb.d
 
+  postgres-shipment:
+    image: postgres:16
+    container_name: postgres-shipment
+    environment:
+      POSTGRES_DB: shipment_db
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5457:5432"
+    volumes:
+      - shipment_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/shipment:/docker-entrypoint-initdb.d
 
-  # 2. De Message Broker
+  postgres-catalog:
+    image: postgres:16
+    container_name: postgres-catalog
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: ball_admin
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5458:5432"
+    volumes:
+      - catalog_postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/catalog:/docker-entrypoint-initdb.d
+
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: ballcom-rabbitmq
     ports:
-      - "5672:5672"   # Voor de Java code
-      - "15672:15672" # Voor het dashboard in je browser
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ball_admin
       RABBITMQ_DEFAULT_PASS: supersecretpassword
-
-  # 3. Jouw Ordering Microservice Slice
-  # ordering-service:
-  #   build: ./ballcom-ordering
-  #   container_name: ballcom-ordering
-  #   ports:
-  #     - "8081:8080" # We mappen poort 8080 uit de container naar 8081 op je pc
-  #   depends_on:
-  #     - postgres
-  #     - rabbitmq
 
 volumes:
   ordering_postgres_data:
   payment_postgres_data:
   shipment_postgres_data:
+  catalog_postgres_data:

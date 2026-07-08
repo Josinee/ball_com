@@ -5,5 +5,6 @@ public record CatalogCreateRequest (
     String price,
     String description,
     String category,
-    String availability
+    String availability,
+    String owner
 ) {}
