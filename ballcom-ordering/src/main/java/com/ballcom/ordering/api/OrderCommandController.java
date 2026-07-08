@@ -42,7 +42,7 @@ public class OrderCommandController {
 
             return ResponseEntity.accepted().location(URI.create("/orders/" + orderId)).body(new OrderAcceptedResponse(orderId));
 
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
         } catch (Exception e) {
