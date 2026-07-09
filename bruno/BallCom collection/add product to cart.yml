@@ -1,0 +1,22 @@
+info:
+  name: add product to cart
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://localhost:8080/catalog/cart/{{customerId}}/add
+  body:
+    type: json
+    data: |-
+      {
+        "productId": "{{catalogId}}",
+        "quantity": 3
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

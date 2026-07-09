@@ -1,10 +1,19 @@
 package com.ballcom.ordering.infrastructure.messaging;
 
+import com.ballcom.ordering.api.OrderCommandController;
+import com.ballcom.ordering.api.dto.OrderAcceptedResponse;
+import com.ballcom.ordering.application.OrderCommandHandler;
+import com.ballcom.ordering.application.commands.PlaceOrderCommand;
+import com.ballcom.ordering.application.commands.PlaceOrderCommand.OrderItemData;
+import com.ballcom.ordering.domain.OrderItem;
 import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,9 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderEventListener {
 
     private final JdbcTemplate jdbcTemplate;
+    private final ObjectMapper objectMapper;
+    private final OrderCommandHandler commandHandler;
 
-    public OrderEventListener(JdbcTemplate jdbcTemplate) {
+    public OrderEventListener(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, OrderCommandHandler commandHandler) {
         this.jdbcTemplate = jdbcTemplate;
+        this.objectMapper = objectMapper;
+        this.commandHandler = commandHandler;
 
     }
     @Transactional
@@ -126,4 +139,53 @@ public class OrderEventListener {
             e.printStackTrace();
         }
     }
+
+    
+    @RabbitListener(queues="ordering-catalog-updates-queue")
+    public void consumeCheckout(GenericDomainEvent event){
+        System.out.println("in consume checkout with " + event.eventType());
+        try {
+            String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
+            int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
+            if (rowsAffected == 0) {
+                System.out.println("Event " + event.eventId() + " al eerder verwerkt");
+                return;
+            }
+        
+            Map<String, Object> payload = (Map<String, Object>) event.payload();
+            if (EventType.CHECKOUT_REQUESTED.equals(event.eventType())) {
+                System.out.println("event is het goede event");
+                try {
+                
+                    UUID customerId = UUID.fromString((String) payload.get("customerId"));
+                    String paymentMethod = (String) payload.get("paymentMethod");
+
+                    List<OrderItem> cartItems = objectMapper.convertValue(
+                        payload.get("items"), 
+                        new TypeReference<List<OrderItem>>() {}
+                    );
+                    List<OrderItemData> commandItems = cartItems.stream()
+                        .map(item -> new OrderItemData(
+                                item.productId(), 
+                                item.quantity(), 
+                                item.unitPrice()
+                        ))
+                        .toList();
+                                        
+                    PlaceOrderCommand command = new PlaceOrderCommand(customerId, commandItems, paymentMethod);
+                    UUID orderId = commandHandler.handle(command);
+                    System.out.println("command is gedaan");
+
+                } catch (Exception e) {
+                    System.err.println("Error processing order event: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error in event: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS ordering_customers (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     updated_at TIMESTAMP NOT NULL
+    
 );
 
 CREATE TABLE IF NOT EXISTS ordering_catalog_items (

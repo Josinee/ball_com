@@ -1,4 +1,15 @@
 services:
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: ballcom-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ball_admin
+      RABBITMQ_DEFAULT_PASS: supersecretpassword
+
   postgres-ordering:
     image: postgres:16
     container_name: postgres-ordering
@@ -64,16 +75,63 @@ services:
       - customer_postgres_data:/var/lib/postgresql/data
       - ./init-scripts/customer:/docker-entrypoint-initdb.d
 
-  rabbitmq:
-    image: rabbitmq:3.12-management
-    container_name: ballcom-rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ball_admin
-      RABBITMQ_DEFAULT_PASS: supersecretpassword
 
+  ordering-service:
+    build: ./ballcom-ordering
+    container_name: ordering-service
+    ports:
+      - "8082:8080"
+    depends_on:
+      - postgres-ordering
+      - rabbitmq
+
+  payment-service:
+    build: ./ballcom-payment
+    container_name: payment-service
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres-payment
+      - rabbitmq
+
+  customer-service:
+    build: ./ballcom-customer
+    container_name: customer-service
+    ports:
+      - "8083:8080"
+    depends_on:
+      - postgres-customer
+      - rabbitmq
+
+  shipment-service:
+    build: ./ballcom-shipment
+    container_name: shipment-service
+    ports:
+      - "8084:8080"
+    depends_on:
+      - postgres-shipment
+      - rabbitmq
+
+  catalog-service:
+    build: ./ballcom-catalog
+    container_name: catalog-service
+    ports:
+      - "8085:8080"
+    depends_on:
+      - postgres-catalog
+      - rabbitmq
+
+  gateway-service:
+    build: ./ballcom-gateway
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ordering-service
+      - payment-service
+      - customer-service
+      - shipment-service
+      - catalog-service
 volumes:
   ordering_postgres_data:
   payment_postgres_data:

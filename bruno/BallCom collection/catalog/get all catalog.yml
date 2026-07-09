@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/catalogs
+  url: http://localhost:8080/catalog
   auth: inherit
 
 runtime:

@@ -1,11 +1,11 @@
 info:
-  name: get catalog by id
+  name: get cart
   type: http
-  seq: 3
+  seq: 9
 
 http:
   method: GET
-  url: http://localhost:8080/catalog/{{catalogId}}
+  url: ""
   auth: inherit
 
 settings:

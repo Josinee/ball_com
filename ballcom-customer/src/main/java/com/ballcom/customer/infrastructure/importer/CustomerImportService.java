@@ -26,11 +26,11 @@ import java.util.UUID;
 public class CustomerImportService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RabbitTemplate rabbitTemplate;
+    // private final RabbitTemplate rabbitTemplate;
 
     public CustomerImportService(JdbcTemplate jdbcTemplate, RabbitTemplate rabbitTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.rabbitTemplate = rabbitTemplate;
+        // this.rabbitTemplate = rabbitTemplate;
     }
 
     @Scheduled(cron = "0 0 2 * * ?")
@@ -113,13 +113,13 @@ public class CustomerImportService {
                             Timestamp.from(occurredAt)
                     );
 
-                    publishCustomerRegisteredEvent(
-                            customerId,
-                            companyName,
-                            firstName,
-                            lastName,
-                            occurredAt
-                    );
+                    // publishCustomerRegisteredEvent(
+                    //         customerId,
+                    //         companyName,
+                    //         firstName,
+                    //         lastName,
+                    //         occurredAt
+                    // );
 
                     counter++;
                 } catch (Exception e) {
@@ -133,34 +133,35 @@ public class CustomerImportService {
             System.err.println("Fout tijdens de import: " + e.getMessage());
         }
     }
-
-    private void publishCustomerRegisteredEvent(
-            UUID customerId,
-            String companyName,
-            String firstName,
-            String lastName,
-            Instant occurredAt
-    ) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("companyName", companyName);
-        payload.put("firstName", firstName);
-        payload.put("lastName", lastName);
-
-        GenericDomainEvent event = new GenericDomainEvent(
-                UUID.randomUUID(),
-                customerId,
-                0,
-                EventType.CUSTOMER_REGISTERED,
-                occurredAt,
-                payload
-        );
-
-        rabbitTemplate.convertAndSend(
-                "customer.exchange",
-                "customer.registered",
-                event
-        );
-
-        System.out.println("CUSTOMER IMPORT: CUSTOMER_REGISTERED event gepubliceerd voor " + customerId);
-    }
 }
+    
+    // private void publishCustomerRegisteredEvent(
+    //         UUID customerId,
+    //         String companyName,
+    //         String firstName,
+    //         String lastName,
+    //         Instant occurredAt
+    // ) {
+//         Map<String, Object> payload = new HashMap<>();
+//         payload.put("companyName", companyName);
+//         payload.put("firstName", firstName);
+//         payload.put("lastName", lastName);
+
+//         GenericDomainEvent event = new GenericDomainEvent(
+//                 UUID.randomUUID(),
+//                 customerId,
+//                 0,
+//                 EventType.CUSTOMER_REGISTERED,
+//                 occurredAt,
+//                 payload
+//         );
+
+//         rabbitTemplate.convertAndSend(
+//                 "customer.exchange",
+//                 "customer.registered",
+//                 event
+//         );
+
+//         System.out.println("CUSTOMER IMPORT: CUSTOMER_REGISTERED event gepubliceerd voor " + customerId);
+//     }
+// }

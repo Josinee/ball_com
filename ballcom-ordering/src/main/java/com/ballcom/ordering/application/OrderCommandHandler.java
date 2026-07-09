@@ -31,11 +31,11 @@ public class OrderCommandHandler {
             throw new IllegalArgumentException("CustomerId is required");
         }
 
-        if (!customerExistsLocally(command.customerId())) {
-            throw new IllegalArgumentException(
-                    "Customer is not known in Ordering yet: " + command.customerId()
-            );
-        }
+        // if (!customerExistsLocally(command.customerId())) {
+        //     throw new IllegalArgumentException(
+        //             "Customer is not known in Ordering yet: " + command.customerId()
+        //     );
+        // }
 
         if (command.items() == null || command.items().isEmpty()) {
             throw new IllegalArgumentException("An order must contain at least 1 item");
@@ -55,18 +55,18 @@ public class OrderCommandHandler {
                         throw new IllegalArgumentException("Quantity must be greater than zero");
                     }
 
-                    CatalogSnapshot product = getProductSnapshot(i.productId());
+                    //CatalogSnapshot product = getProductSnapshot(i.productId());
 
-                    if (!"IN_STOCK".equalsIgnoreCase(product.availability())) {
-                        throw new IllegalArgumentException(
-                                "Product is not in stock: " + i.productId()
-                        );
-                    }
+                    // if (!"IN_STOCK".equalsIgnoreCase(product.availability())) {
+                    //     throw new IllegalArgumentException(
+                    //             "Product is not in stock: " + i.productId()
+                    //     );
+                    // }
 
                     return new OrderItem(
-                            product.productId(),
+                            i.productId(),
                             i.quantity(),
-                            product.price()
+                            i.unitPrice()
                     );
                 })
                 .toList();
@@ -88,43 +88,43 @@ public class OrderCommandHandler {
         return order.getId();
     }
 
-    private boolean customerExistsLocally(UUID customerId) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM ordering_customers WHERE customer_id = ?",
-                Integer.class,
-                customerId
-        );
+    // private boolean customerExistsLocally(UUID customerId) {
+    //     Integer count = jdbcTemplate.queryForObject(
+    //             "SELECT COUNT(*) FROM ordering_customers WHERE customer_id = ?",
+    //             Integer.class,
+    //             customerId
+    //     );
 
-        return count != null && count > 0;
-    }
+    //     return count != null && count > 0;
+    // }
 
-    private CatalogSnapshot getProductSnapshot(UUID productId) {
-        String sql = """
-            SELECT product_id, price, availability
-            FROM ordering_catalog_items
-            WHERE product_id = ?
-        """;
+    // private CatalogSnapshot getProductSnapshot(UUID productId) {
+    //     String sql = """
+    //         SELECT product_id, price, availability
+    //         FROM ordering_catalog_items
+    //         WHERE product_id = ?
+    //     """;
 
-        return jdbcTemplate.query(sql, rs -> {
-            if (!rs.next()) {
-                throw new IllegalArgumentException(
-                        "Product is not known in Ordering yet: " + productId
-                );
-            }
+    //     return jdbcTemplate.query(sql, rs -> {
+    //         if (!rs.next()) {
+    //             throw new IllegalArgumentException(
+    //                     "Product is not known in Ordering yet: " + productId
+    //             );
+    //         }
 
-            return new CatalogSnapshot(
-                    rs.getObject("product_id", UUID.class),
-                    rs.getBigDecimal("price"),
-                    rs.getString("availability")
-            );
-        }, productId);
-    }
+    //         return new CatalogSnapshot(
+    //                 rs.getObject("product_id", UUID.class),
+    //                 rs.getBigDecimal("price"),
+    //                 rs.getString("availability")
+    //         );
+    //     }, productId);
+    // }
 
-    private record CatalogSnapshot(
-            UUID productId,
-            BigDecimal price,
-            String availability
-    ) {}
+    // private record CatalogSnapshot(
+    //         UUID productId,
+    //         BigDecimal price,
+    //         String availability
+    // ) {}
 
     @Transactional
     public UUID handle(ConfirmOrderPaymentCommand command) {

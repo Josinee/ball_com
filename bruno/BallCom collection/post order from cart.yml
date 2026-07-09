@@ -1,0 +1,19 @@
+info:
+  name: post order from cart
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: http://localhost:8080/catalog/cart/{{customerId}}/checkout?paymentMethod=PREPAY
+  params:
+    - name: paymentMethod
+      value: PREPAY
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -13,7 +13,4 @@ public record OrderItem(UUID productId, int quantity, BigDecimal unitPrice) {
         }
     }
 
-    public BigDecimal lineTotal() {
-        return unitPrice.multiply(BigDecimal.valueOf(quantity));
-    }
 }
