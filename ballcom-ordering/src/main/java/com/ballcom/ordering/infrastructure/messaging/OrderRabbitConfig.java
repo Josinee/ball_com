@@ -55,5 +55,46 @@ public class OrderRabbitConfig {
         return BindingBuilder.bind(orderQueue).to(shipmentExchange).with("shipment.#");
     }
 
+    @Bean
+    public Queue orderingCatalogUpdatesQueue() {
+        return new Queue("ordering-catalog-updates-queue", true);
+    }
+
+    @Bean
+    public TopicExchange catalogExchange() {
+        return new TopicExchange("catalog.exchange", true, false);
+    }
+
+    @Bean
+    public Binding orderingCatalogBinding(
+        Queue orderingCatalogUpdatesQueue,
+        TopicExchange catalogExchange
+    ) {
+        return BindingBuilder
+            .bind(orderingCatalogUpdatesQueue)
+            .to(catalogExchange)
+            .with("catalog.#");
+    }
+
+    @Bean
+    public Queue orderingCustomerUpdatesQueue() {
+        return new Queue("ordering-customer-updates-queue", true);
+    }
+
+    @Bean
+    public TopicExchange customerExchange() {
+        return new TopicExchange("customer.exchange", true, false);
+        }
+
+    @Bean
+    public Binding orderingCustomerBinding(
+        Queue orderingCustomerUpdatesQueue,
+        TopicExchange customerExchange
+    ) {
+        return BindingBuilder
+            .bind(orderingCustomerUpdatesQueue)
+            .to(customerExchange)
+            .with("customer.#");
+    }
 
 }

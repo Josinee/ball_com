@@ -1,39 +1,28 @@
 package com.ballcom.ordering.application;
 
-
 import com.ballcom.ordering.application.commands.ConfirmOrderPaymentCommand;
 import com.ballcom.ordering.application.commands.PlaceOrderCommand;
 import com.ballcom.ordering.domain.OrderAggregate;
 import com.ballcom.ordering.domain.OrderItem;
-import com.ballcom.ordering.infrastructure.catalog.CatalogClient;
-import com.ballcom.ordering.infrastructure.catalog.CatalogItemResponse;
-import com.ballcom.ordering.infrastructure.customer.CustomerClient;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.eventsourcing.EventStore;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-
 @Component
 public class OrderCommandHandler {
     private final EventStore eventStore;
-    private final CatalogClient catalogClient;
-    private final CustomerClient customerClient;
+    private final JdbcTemplate jdbcTemplate;
 
-    public OrderCommandHandler(
-            EventStore eventStore,
-            CatalogClient catalogClient,
-            CustomerClient customerClient
-    ) {
+    public OrderCommandHandler(EventStore eventStore, JdbcTemplate jdbcTemplate) {
         this.eventStore = eventStore;
-        this.catalogClient = catalogClient;
-        this.customerClient = customerClient;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional
@@ -42,8 +31,10 @@ public class OrderCommandHandler {
             throw new IllegalArgumentException("CustomerId is required");
         }
 
-        if (!customerClient.customerExists(command.customerId())) {
-            throw new IllegalArgumentException("Customer does not exist: " + command.customerId());
+        if (!customerExistsLocally(command.customerId())) {
+            throw new IllegalArgumentException(
+                    "Customer is not known in Ordering yet: " + command.customerId()
+            );
         }
 
         if (command.items() == null || command.items().isEmpty()) {
@@ -54,10 +45,8 @@ public class OrderCommandHandler {
             throw new IllegalArgumentException("An order cannot contain more than 20 items");
         }
 
-
-        //krijg de items uit de command, vertaal het naar domeinobjecten
         List<OrderItem> items = command.items().stream()
-            .map(i -> {
+                .map(i -> {
                     if (i.productId() == null) {
                         throw new IllegalArgumentException("ProductId is required");
                     }
@@ -66,47 +55,94 @@ public class OrderCommandHandler {
                         throw new IllegalArgumentException("Quantity must be greater than zero");
                     }
 
-                    CatalogItemResponse catalogItem = catalogClient.getCatalogItem(i.productId());
+                    CatalogSnapshot product = getProductSnapshot(i.productId());
 
-                    if (!"IN_STOCK".equalsIgnoreCase(catalogItem.availability())) {
-                        throw new IllegalArgumentException("Product is not in stock: " + i.productId());
+                    if (!"IN_STOCK".equalsIgnoreCase(product.availability())) {
+                        throw new IllegalArgumentException(
+                                "Product is not in stock: " + i.productId()
+                        );
                     }
 
-                    BigDecimal catalogPrice = new BigDecimal(catalogItem.price());
-
                     return new OrderItem(
-                            catalogItem.catalogId(),
+                            product.productId(),
                             i.quantity(),
-                            catalogPrice
+                            product.price()
                     );
                 })
                 .toList();
 
-        //omdat het een nieuwe order is, maakt hij een nieuwe OrderAggregate, aggregate slaat de event intern op
-        OrderAggregate order = OrderAggregate.place(command.customerId(), items, command.paymentMethod());
+        OrderAggregate order = OrderAggregate.place(
+                command.customerId(),
+                items,
+                command.paymentMethod()
+        );
 
+        eventStore.append(
+                order.getId(),
+                order.getUncommitedEvents(),
+                order.getExpectedVersion()
+        );
 
-        //sla event op in eventstore
-        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
-        //publiceer een message dat het event heeft plaatsgevonden
         order.clearUncommitedEvents();
+
         return order.getId();
     }
 
+    private boolean customerExistsLocally(UUID customerId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM ordering_customers WHERE customer_id = ?",
+                Integer.class,
+                customerId
+        );
+
+        return count != null && count > 0;
+    }
+
+    private CatalogSnapshot getProductSnapshot(UUID productId) {
+        String sql = """
+            SELECT product_id, price, availability
+            FROM ordering_catalog_items
+            WHERE product_id = ?
+        """;
+
+        return jdbcTemplate.query(sql, rs -> {
+            if (!rs.next()) {
+                throw new IllegalArgumentException(
+                        "Product is not known in Ordering yet: " + productId
+                );
+            }
+
+            return new CatalogSnapshot(
+                    rs.getObject("product_id", UUID.class),
+                    rs.getBigDecimal("price"),
+                    rs.getString("availability")
+            );
+        }, productId);
+    }
+
+    private record CatalogSnapshot(
+            UUID productId,
+            BigDecimal price,
+            String availability
+    ) {}
+
     @Transactional
     public UUID handle(ConfirmOrderPaymentCommand command) {
-        //haal events op uit eventstore
         List<GenericDomainEvent> history = eventStore.loadEvents(command.orderId());
-        // reconstruct aggregate uit de history
+
         OrderAggregate order = new OrderAggregate();
         order.loadFromHistory(history);
 
         order.confirmPayment();
-        //sla nieuwe event van confirm payment op
-        eventStore.append(order.getId(), order.getUncommitedEvents(), order.getExpectedVersion());
-        order.clearUncommitedEvents();
-        return order.getId();
 
+        eventStore.append(
+                order.getId(),
+                order.getUncommitedEvents(),
+                order.getExpectedVersion()
+        );
+
+        order.clearUncommitedEvents();
+
+        return order.getId();
     }
-    
 }

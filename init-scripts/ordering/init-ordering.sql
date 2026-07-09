@@ -22,3 +22,23 @@ CREATE TABLE IF NOT EXISTS order_views (
     payment_status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+
+-- voor de custoemrs en catalogs
+
+CREATE TABLE IF NOT EXISTS ordering_customers (
+    customer_id UUID PRIMARY KEY,
+    company_name VARCHAR(255),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    updated_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ordering_catalog_items (
+    product_id UUID PRIMARY KEY,
+    item_name VARCHAR(255) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    category VARCHAR(255),
+    availability VARCHAR(255) NOT NULL,
+    owner VARCHAR(255),
+    updated_at TIMESTAMP NOT NULL
+);
