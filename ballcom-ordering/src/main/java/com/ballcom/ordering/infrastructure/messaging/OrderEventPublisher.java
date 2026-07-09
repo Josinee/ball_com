@@ -22,16 +22,10 @@ public class OrderEventPublisher implements EventPublisher {
     public void publish(GenericDomainEvent event) {
         // genereert specifieke routing key
 
-        System.out.println("=== TRANSPORT START ===");
-        System.out.println("RABBITMQ: Poging tot verzenden... EventType: " + event.eventType()
-                + " naar exchange: payment.exchange");
-
         try {
             rabbitTemplate.convertAndSend("order.exchange", "order.placed", event);
-            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "order.placed");
         } catch (Exception e) {
-            System.err.println("RABBITMQ FOUT: Verzenden mislukt! " + e.getMessage());
+            System.err.println(e.getMessage());
         }
-        System.out.println("=== TRANSPORT EIND ===");
     }
 }

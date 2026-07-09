@@ -3,14 +3,18 @@ package com.ballcom.catalog.infrastructure.persistence;
 import org.springframework.stereotype.Repository;
 import com.ballcom.shared.eventsourcing.EventStore;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ballcom.shared.events.EventType;
 import com.ballcom.shared.events.GenericDomainEvent;
 import com.ballcom.shared.messaging.EventPublisher;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
@@ -51,9 +55,7 @@ public class PostgresEventStore implements EventStore{
                 String jsonPayload = objectMapper.writeValueAsString(event.payload());
 
                 String sql =
-                    "INSERT INTO event_store " +
-                    "(id, aggregate_id, aggregate_type, sequence_number, event_type, payload, occurred_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?::jsonb, ?)";
+                    "INSERT INTO event_store (id, aggregate_id, aggregate_type, sequence_number, event_type, payload, occurred_at) VALUES (?, ?, ?, ?, ?, ?::jsonb, ?)";
 
                 jdbcTemplate.update(
                     sql,
@@ -86,9 +88,29 @@ public class PostgresEventStore implements EventStore{
         return version != null ? version : 0;
     }
 
+    @Override
     public List<GenericDomainEvent> loadEvents(UUID aggregateId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadEvents'");
+        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload FROM event_store WHERE aggregate_id = ? ORDER BY sequence_number ASC";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            try {
+                UUID eventId = UUID.fromString(rs.getString("id"));
+                UUID aggId = UUID.fromString(rs.getString("aggregate_id"));
+                long sequenceNumber = rs.getLong("sequence_number");
+                EventType eventType = EventType.valueOf(rs.getString("event_type"));
+                Instant occurredAt = rs.getTimestamp("occurred_at").toInstant();
+                
+                String payloadJson = rs.getString("payload");
+                Map<String, Object> payload = objectMapper.readValue(
+                    payloadJson, 
+                    new TypeReference<Map<String, Object>>() {}
+                );
+
+                return new GenericDomainEvent(eventId, aggId, sequenceNumber, eventType, occurredAt, payload);
+            } catch (Exception e) {
+                throw new RuntimeException("Fout bij het omzetten van database row naar GenericDomainEvent", e);
+            }
+        }, aggregateId.toString()); 
     }
 
 }

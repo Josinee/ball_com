@@ -10,5 +10,4 @@ public class ShipmentApplication {
     public static void main(String[] args) {
         SpringApplication.run(ShipmentApplication.class, args);
     }
-} //TODO heeft geen customer en geen adres daardoor
-//weet ook niet zeker of de prijs nou klopt die betaald is
+}

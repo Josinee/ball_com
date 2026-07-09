@@ -33,7 +33,6 @@ public class PostgresEventStore implements EventStore {
     @Override
     public void append(UUID aggregateId, List<GenericDomainEvent> events, long expectedVersion) {
 
-        // huidige versie ophalen
         long currentVersion = getCurrentVersion(aggregateId);
 
         if (currentVersion != expectedVersion) {
@@ -68,8 +67,7 @@ public class PostgresEventStore implements EventStore {
 
     @Override
     public List<GenericDomainEvent> loadEvents(UUID aggregateId) {
-        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload "
-                + "FROM event_store " + "WHERE aggregate_id = ? " + "ORDER BY sequence_number ASC";
+        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload FROM event_store WHERE aggregate_id = ? ORDER BY sequence_number ASC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             try {

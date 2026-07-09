@@ -20,18 +20,12 @@ public class ShipmentEventPublisher implements EventPublisher{
     @Override
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publish(GenericDomainEvent event) { 
-    
-        System.out.println("=== TRANSPORT START ===");
-        System.out.println("RABBITMQ: Poging tot verzenden... EventType: " + event.eventType()
-                + " naar exchange: shipment.exchange");
-        String routingKey = "shipment." + event.eventType().name().toLowerCase().replace("_", ".");
+            String routingKey = "shipment." + event.eventType().name().toLowerCase().replace("_", ".");
         try {
             rabbitTemplate.convertAndSend("shipment.exchange", routingKey, event);
-            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + "shipment." + event.eventType().name().toLowerCase().replace("_", "."));
         } catch (Exception e) {
-            System.err.println("RABBITMQ FOUT: Verzenden mislukt! " + e.getMessage());
+            System.err.println("RABBITMQ FOUT " + e.getMessage());
         }
-        System.out.println("=== TRANSPORT EIND ===");
     }
     }
     // published een SHIPPING_COST_CALCULATED waar payment naar luistert, maakt daarna een paymentaggregate aan

@@ -41,7 +41,6 @@ public class CustomerAggregate extends AggregateRoot{
         long nextSequence = customer.getSequenceNumber() + 1;
         GenericDomainEvent event = new GenericDomainEvent(UUID.randomUUID(), customerId, nextSequence, EventType.CUSTOMER_REGISTERED, Instant.now(), payload);
         customer.raiseEvent(event);
-        System.out.println("in register in aggregate " + customer.id);
         return customer;
     }
 

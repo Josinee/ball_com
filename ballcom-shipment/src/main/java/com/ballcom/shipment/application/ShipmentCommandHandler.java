@@ -50,7 +50,6 @@ public class ShipmentCommandHandler  {
     @Transactional
     public void handleReleaseToWarehouse(ReleaseShipmentToWarehouse command) {
 
-        // laad event history
         List<GenericDomainEvent> history = eventStore.loadEvents(command.shipmentId());
         if (history == null || history.isEmpty()) {
             throw new RuntimeException("Fout bij PaymentApproved: De mapping bestaat (shipmentId: " + command.shipmentId() + "), maar er zijn GEEN events gevonden in de event_store voor deze shipment. Is het aanmaken van de shipment gecrasht?");

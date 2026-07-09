@@ -23,23 +23,9 @@ public class CatalogCommandController {
         this.commandHandler = commandHandler;
     }
 
-    // @PostMapping
-    // public ResponseEntity<CatalogCreatedResponse> createCatalog(@RequestBody CatalogCreateRequest request) {
-
-    //     var command = new CreateCatalogCommand(
-    //             request.itemName(),
-    //             request.price(),
-    //             request.description(),
-    //             request.category(),
-    //             request.availability(),
-    //             request.owner()
-    //     );
-        
-    //     UUID catalogId = commandHandler.handle(command);
-    //     return ResponseEntity.accepted().body(new CatalogCreatedResponse(catalogId));
-    // }
+  
     @PostMapping
-public ResponseEntity<?> createCatalog(@RequestBody CatalogCreateRequest request) {
+    public ResponseEntity<?> createCatalog(@RequestBody CatalogCreateRequest request) {
     try {
         var command = new CreateCatalogCommand(
             request.itemName(),

@@ -6,6 +6,6 @@ public record Address(String street, String houseNumber, String city, String zip
         if (houseNumber == null || houseNumber.isBlank()) throw new IllegalArgumentException("Housenumber is invalid");
         if (city == null || city.isBlank()) throw new IllegalArgumentException("City is invalid");
         if (zipCode == null || zipCode.isBlank()) throw new IllegalArgumentException("Zipcode is invalid");
-//TODO verdere validatie??
+
     }
 }

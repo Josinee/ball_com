@@ -20,18 +20,11 @@ public class PaymentEventPublisher implements EventPublisher {
     public void publish(GenericDomainEvent event) {
         // genereert specifieke routing key
         String routingKey = "payment." + event.eventType();
-
-        System.out.println("=== TRANSPORT START ===");
-        System.out.println("RABBITMQ: Poging tot verzenden... EventType: " + event.eventType()
-                + " naar exchange: payment.exchange");
-
         try {
             rabbitTemplate.convertAndSend("payment.exchange", routingKey, event);
-            System.out.println("RABBITMQ: Succesvol gepubliceerd! RoutingKey: " + routingKey);
         } catch (Exception e) {
-            System.err.println("RABBITMQ FOUT: Verzenden mislukt! " + e.getMessage());
+            System.err.println("RABBITMQ FOUT " + e.getMessage());
         }
-        System.out.println("=== TRANSPORT EIND ===");
     }
 
 }

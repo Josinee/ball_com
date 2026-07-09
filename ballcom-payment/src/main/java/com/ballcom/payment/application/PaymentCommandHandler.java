@@ -26,19 +26,13 @@ public class PaymentCommandHandler {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * PHASE 1: Het registreren van de betalingsintentie.
-     * Dit wordt direct aangeroepen zodra de Order is geplaatst.
-     */
+
     @Transactional
     public void handle(ProcessPaymentCommand command) {
-        // Valideer basis business rules vóórdat we events aanmaken
         if (command.total().compareTo(java.math.BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Het totale bedrag moet groter zijn dan 0");
         }
 
-        // 1. Initialiseer de betaling (Status wordt INITIATED)
-        // We gebruiken command.orderId() als de unieke sleutel (Aggregate ID)
         PaymentAggregate payment = PaymentAggregate.initiate(
             command.paymentId(),
             command.orderId(), 
@@ -47,27 +41,17 @@ public class PaymentCommandHandler {
             command.paymentMethod()
         );
         
-        // 2. Pas de business rules toe op basis van de methode
         if (command.paymentMethod().equals(PaymentMethod.AFTERPAY)) {
-            // Achteraf betalen? Direct in de wachtstand zetten voor bezorging!
             payment.holdForDelivery(); 
         } 
-        // LET OP: Als het PREPAY is, doen we hier niks! De status blijft INITIATED 
-        // totdat de klant daadwerkelijk via de bank heeft betaald.
 
-        // 3. Sla de wijzigingen op
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
     }
 
-    /**
-     * PHASE 2A: De betaling is geslaagd!
-     * Dit wordt getriggerd door een webhook van je Payment Provider (Adyen/Mollie)
-     * of wanneer een AFTERPAY order succesvol is bezorgd en de factuur is voldaan.
-     */
+    
     @Transactional
     public UUID handle(CompletePaymentCommand command) {
-        // 1. Zoek de actieve betaling op basis van de ORDER ID uit het command
         String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
         UUID paymentId;
         try {
@@ -76,7 +60,6 @@ public class PaymentCommandHandler {
             throw new RuntimeException("Kan betaling niet afronden: Geen actieve betaling gevonden voor orderId: " + command.orderId());
         }
         
-        // 2. Laad de historie uit de event store op basis van de gevonden paymentId
         List<GenericDomainEvent> history = eventStore.loadEvents(paymentId); 
         
         PaymentAggregate payment = new PaymentAggregate();
@@ -89,11 +72,7 @@ public class PaymentCommandHandler {
         return payment.getId();
     }
 
-    /**
-     * PHASE 2B: Het antwoord op jouw vraag: Hoe faalt een betaling?
-     * Dit wordt getriggerd als de Payment Provider meldt dat de betaling is mislukt,
-     * of als een timer ziet dat de iDEAL-sessie is verlopen.
-     */
+    
     @Transactional
     public void handle(FailPaymentCommand command) {
         String lookupSql = "SELECT payment_id FROM order_payment_mapping WHERE order_id = ?";
@@ -109,10 +88,8 @@ public class PaymentCommandHandler {
         
         payment.loadFromHistory(history);
 
-        // 2. Voer business logica uit (Status verandert naar FAILED met een reden)
         payment.fail(command.reason());
 
-        // 3. Sla het PAYMENT_FAILED event op
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());
         payment.clearUncommitedEvents();
     }
@@ -126,7 +103,6 @@ public class PaymentCommandHandler {
         PaymentAggregate payment = new PaymentAggregate();
         payment.loadFromHistory(history);
 
-        // Zet de status op DELIVERY_CONFIRMED
         payment.registerDelivery();
 
         eventStore.append(payment.getId(), payment.getUncommitedEvents(), payment.getExpectedVersion());

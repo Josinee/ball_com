@@ -23,8 +23,6 @@ public class CustomerImportController {
     @PostMapping("/import")
     public ResponseEntity<String> triggerImport() {
         try {
-            System.out.println("Handmatige trigger ontvangen via REST API!");
-
             customerImportService.importNightlyCustomers();
             
             return ResponseEntity.ok("Import handmatig succesvol uitgevoerd! Check de console voor details.");

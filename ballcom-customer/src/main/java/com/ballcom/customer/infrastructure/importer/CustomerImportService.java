@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- NIEUW
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -28,7 +28,6 @@ public class CustomerImportService {
     @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void importNightlyCustomers() {
-        System.out.println("START: Nachtelijke import van klantgegevens gestart...");
 
         try (InputStream inputStream = new ClassPathResource("fake_customer_data_export.csv").getInputStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -109,10 +108,10 @@ public class CustomerImportService {
                 }
             }
 
-            System.out.println("SUCCES: Import afgerond. " + counter + " klanten verwerkt/geüpdatet.");
+            System.out.println("Import afgerond. " + counter + " klanten verwerkt/geüpdatet.");
 
         } catch (Exception e) {
-            System.err.println("Grote fout tijdens de import-verwerking: " + e.getMessage());
+            System.err.println("Fout tijdens de import: " + e.getMessage());
         }
     }
 }

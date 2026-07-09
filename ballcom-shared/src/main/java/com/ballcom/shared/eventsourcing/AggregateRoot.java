@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.ballcom.shared.events.GenericDomainEvent;
-// houd interne status en de uncommited events lijst bij
 public abstract class AggregateRoot {
     protected UUID id;
-    protected long sequenceNumber =-1; //-1 betekent een nieuwe aggregate
+    protected long sequenceNumber =-1;
     private final List<GenericDomainEvent> uncommitedEvents = new ArrayList<>();
     
     public UUID getId(){ return id;}
@@ -20,14 +19,12 @@ public abstract class AggregateRoot {
         uncommitedEvents.clear();
     }
 
-    // wordt aangeroepen bij nieuwe mutaties
     protected void raiseEvent(GenericDomainEvent event) {
         apply(event);
         this.sequenceNumber = event.sequenceNumber();
         uncommitedEvents.add(event);
     }
 
-    // wordt aangeroepen bij het herladen van history uit de database
     public void loadFromHistory(Iterable<GenericDomainEvent> history) {
         for (GenericDomainEvent event : history) {
             apply(event);

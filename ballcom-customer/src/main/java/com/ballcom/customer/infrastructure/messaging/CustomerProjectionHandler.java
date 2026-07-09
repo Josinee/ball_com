@@ -20,7 +20,6 @@ public class CustomerProjectionHandler {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Deze methode luistert naar de queue
     @RabbitListener(queues = "customer-readmodel-queue")
     public void consume(GenericDomainEvent event) {
         try {
@@ -30,9 +29,7 @@ public class CustomerProjectionHandler {
                 System.out.println("Event " + event.eventId() + "al eerder verwerkt");
                 return;
             }
-        
-            System.out.println("CONSUMER: Event ontvangen in de read-kant! Type: " + event.eventType());
-            
+                    
             if (EventType.CUSTOMER_REGISTERED.equals(event.eventType())) {
                 Map<String, Object> payload = (Map<String, Object>) event.payload();
 
@@ -88,11 +85,11 @@ public class CustomerProjectionHandler {
 
                 );
 
-                System.out.println("Customer view opgeslagen: " + customerId);
+                System.out.println("Customer opgeslagen: " + customerId);
             }
 
         } catch (Exception e) {
-            System.err.println("ERROR processing customer event: " + e.getMessage());
+            System.err.println("Error processing customer event: " + e.getMessage());
             e.printStackTrace();
         }
     }

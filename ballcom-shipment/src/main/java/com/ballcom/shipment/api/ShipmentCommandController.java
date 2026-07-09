@@ -17,14 +17,12 @@ public class ShipmentCommandController {
         this.commandHandler = commandHandler;
     }
 
-    //Handmatig op shipped zetten
     @PostMapping("/{orderId}/ship")
     public ResponseEntity<?> shipOrder(@PathVariable UUID orderId) {
         UUID shipmentId = commandHandler.handleOrderShipped(new ShipShipmentCommand(orderId));
         return ResponseEntity.accepted().body(new ShipmentResponse(shipmentId, "SHIPPED")); 
     }
 
-    //Handmatig op delivered zetten
     @PostMapping("/{orderId}/deliver")
     public ResponseEntity<?> deliverOrder(@PathVariable UUID orderId) {
         UUID shipmentId = commandHandler.handleDeliveryCompleted(new DeliverShipmentCommand(orderId));

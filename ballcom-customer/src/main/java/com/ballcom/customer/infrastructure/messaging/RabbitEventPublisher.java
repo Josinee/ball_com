@@ -24,7 +24,5 @@ public class RabbitEventPublisher implements EventPublisher{
         //genereert specifieke routing key
         String routingKey = "customer." + event.eventType();
         
-        rabbitTemplate.convertAndSend("customer.exchange", routingKey, event);
-        System.out.println("RABBITMQ: Event gepubliceerd met routing key " + routingKey);
-    }
+        rabbitTemplate.convertAndSend("customer.exchange", routingKey, event);    }
 }

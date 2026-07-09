@@ -1,6 +1,5 @@
 package com.ballcom.catalog.domain;
 
-//TODO: AANPASSEN
 
 import java.time.Instant;
 import java.util.Map;
@@ -75,7 +74,7 @@ public class CatalogAggregate extends AggregateRoot{
     }
 
     //wordt aangeroepen door raiseEvent, veranderd interne velden op basis van het event
-   // @Override
+    @Override
     protected void apply(GenericDomainEvent event) {
         if(EventType.CATALOG_CREATED.equals(event.eventType())) {
             this.id = event.aggregateId();

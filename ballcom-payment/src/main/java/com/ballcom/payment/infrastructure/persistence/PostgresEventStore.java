@@ -75,8 +75,7 @@ public class PostgresEventStore implements EventStore {
 
     @Override
     public List<GenericDomainEvent> loadEvents(UUID aggregateId) {
-        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload "
-                + "FROM event_store " + "WHERE aggregate_id = ? " + "ORDER BY sequence_number ASC";
+        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload FROM event_store WHERE aggregate_id = ? ORDER BY sequence_number ASC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             try {

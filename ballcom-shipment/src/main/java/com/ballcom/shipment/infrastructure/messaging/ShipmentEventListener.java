@@ -26,16 +26,10 @@ public class ShipmentEventListener {
         this.commandHandler = commandHandler;
     }
 
-    //Moet naar ORDER_PLACED luisteren zodat de goedkoopste carrier bepaald wordt
-
-    //Luistert naar PAYMENT_COMPLETED of PAYMENT_AWAITING_DELIVERY om het pakket daadwerkelijk naar PICKING te kunnen zetten
-
-
 
 @RabbitListener(queues = "shipment-order-placed-queue") 
 @Transactional
 public void consumeOrderPlaced(GenericDomainEvent event) {
-    System.out.println("=== ORDER PLACED CONSUMER HOOK ===");
     if(EventType.ORDER_PLACED.equals(event.eventType())){
         String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
         int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
@@ -69,7 +63,6 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
             ON CONFLICT DO NOTHING;
         """;
         jdbcTemplate.update(viewSql, shipmentId, orderId, carrier, price, Timestamp.from(event.occurredAt()));
-        System.out.println("SHIPMENT VIEW: Record aangemaakt met " + carrier + " (? " + price + ") voor order: " + orderId);
 
         var command = new InitiateShipmentCommand(shipmentId, orderId, items);
         commandHandler.handleOrderPlaced(command);
@@ -83,9 +76,6 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
     @RabbitListener(queues = "shipment-payment-made-queue")
     @Transactional
     public void consumePaymentLifecycle(GenericDomainEvent event) {
-        System.out.println("=== CONSUMER ONTVANGEN ===");
-        System.out.println("RABBITMQ: Bericht ontvangen uit shipment-payment-made-queue. Event ID: " + event.eventId() + ", Type: " + event.eventType());
-
         String idempotencySql = "INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?) ON CONFLICT DO NOTHING";
         int rowsAffected = jdbcTemplate.update(idempotencySql, event.eventId(), Timestamp.from(event.occurredAt()));
         if (rowsAffected == 0) {
@@ -98,15 +88,12 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
 
         //betaling voldaan(prepay) of betaling afwachten(afterpay) gaan beide naar picking
         if (EventType.PAYMENT_COMPLETED.equals(event.eventType()) || EventType.PAYMENT_AWAITING_DELIVERY.equals(event.eventType())) {
-        System.out.println("SHIPMENT SAGA: Groen licht ontvangen via " + event.eventType() + " voor order " + orderId + ". Vrijgeven aan magazijn.");
         UUID shipmentId = jdbcTemplate.queryForObject(
             "SELECT shipment_id FROM order_shipment_mapping WHERE order_id = ?", UUID.class, orderId
         );
-        // Stuur één en hetzelfde commando naar de handler
         var command = new ReleaseShipmentToWarehouse(shipmentId);
         commandHandler.handleReleaseToWarehouse(command);
 
-        // Update het Read Model naar PICKING
         String viewSql = "UPDATE shipment_views SET status = 'PICKING', updated_at = ? WHERE shipment_id = ?";
         jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), shipmentId);
         
@@ -124,7 +111,6 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
         UUID orderId = UUID.fromString((String) payload.get("orderId"));
 
         if (EventType.SHIPMENT_SHIPPED.equals(event.eventType())) {
-            System.out.println("Shipment: Pakket is overgedragen aan carrier voor order " + orderId);
 
             String viewSql = """
                 UPDATE shipment_views 
@@ -133,10 +119,8 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
             """;
             jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), orderId);
 
-            System.out.println("SHIPMENT VIEW: Status bijgewerkt naar SHIPPED voor order: " + orderId);
         } 
         else if (EventType.SHIPMENT_DELIVERED.equals(event.eventType())) {
-            System.out.println("Shipment: Pakket succesvol bezorgd voor order " + orderId);
 
             String viewSql = """
                 UPDATE shipment_views 
@@ -144,8 +128,6 @@ public void consumeOrderPlaced(GenericDomainEvent event) {
                 WHERE order_id = ?
             """;
             jdbcTemplate.update(viewSql, Timestamp.from(event.occurredAt()), orderId);
-
-            System.out.println("SHIPMENT VIEW: Status bijgewerkt naar DELIVERED voor order: " + orderId);
         }
     }
 

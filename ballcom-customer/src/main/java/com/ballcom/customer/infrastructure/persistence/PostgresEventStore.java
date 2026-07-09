@@ -52,9 +52,7 @@ public class PostgresEventStore implements EventStore {
                 String jsonPayload = objectMapper.writeValueAsString(event.payload());
 
                 String sql =
-                    "INSERT INTO event_store " +
-                    "(id, aggregate_id, aggregate_type, sequence_number, event_type, payload, occurred_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?::jsonb, ?)";
+                    "INSERT INTO event_store (id, aggregate_id, aggregate_type, sequence_number, event_type, payload, occurred_at) VALUES (?, ?, ?, ?, ?, ?::jsonb, ?)";
 
                 jdbcTemplate.update(
                     sql,
@@ -90,10 +88,7 @@ public class PostgresEventStore implements EventStore {
 
     @Override
     public List<GenericDomainEvent> loadEvents(UUID aggregateId) {
-        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload " +
-                     "FROM event_store " + // Pas dit aan naar jouw tabelnaam, bijv. 'event_store' of 'events'
-                     "WHERE aggregate_id = ? " +
-                     "ORDER BY sequence_number ASC";
+        String sql = "SELECT id, aggregate_id, aggregate_type, sequence_number, event_type, occurred_at, payload FROM event_store WHERE aggregate_id = ? ORDER BY sequence_number ASC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             try {

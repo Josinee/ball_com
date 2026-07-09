@@ -39,17 +39,8 @@ public class CatalogImportService {
                         .setTrim(true)
                         .build())) {
 
-                String sql = """
-                INSERT INTO catalog_views (
-                catalog_id,
-                item_name,
-                price,
-                description,
-                category,
-                availability,
-                owner,
-                updated_at
-                )
+                String sql = "INSERT INTO catalog_views (catalog_id,item_name, price, description, category, availability, owner, updated_at)"+
+                """
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (catalog_id) DO UPDATE
                 SET item_name = EXCLUDED.item_name,

@@ -11,5 +11,5 @@ public record GenericDomainEvent(
     long sequenceNumber,
     EventType eventType,
     Instant occurredAt,
-    Map<String, Object> payload //alle specifieke data
+    Map<String, Object> payload
 ) {}

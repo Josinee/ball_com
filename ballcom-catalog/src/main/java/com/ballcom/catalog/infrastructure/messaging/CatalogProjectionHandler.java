@@ -79,7 +79,7 @@ public class CatalogProjectionHandler {
                 System.out.println("Catalog view opgeslagen: " + catalogId);
             }
 
-            //TODO: de dingen van catalogus die in de db moeten: naam, prijs etc.
+
         } catch (Exception e) {
             System.err.println("ERROR processing catalog event: " + e.getMessage());
             e.printStackTrace();

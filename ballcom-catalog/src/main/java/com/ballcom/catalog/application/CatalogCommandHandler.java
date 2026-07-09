@@ -9,7 +9,6 @@ import com.ballcom.shared.eventsourcing.EventStore;
 import com.ballcom.catalog.application.commands.CreateCatalogCommand;
 import com.ballcom.catalog.domain.CatalogAggregate;
 
-//TODO businessrules hier
 @Service
 public class CatalogCommandHandler {
     

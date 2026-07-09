@@ -23,7 +23,7 @@ public class ShipmentAggregate extends AggregateRoot {
 
         Map<String, Object> payload = Map.of(
             "orderId", orderId.toString(),
-            "status", "AWAITING_PAYMENT", // Wacht op groen licht van Payment
+            "status", "AWAITING_PAYMENT",
             "carrier", carrier,
             "shippingPrice", String.valueOf(shippingPrice)
         );
