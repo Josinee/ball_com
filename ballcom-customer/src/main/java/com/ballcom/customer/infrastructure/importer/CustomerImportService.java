@@ -1,8 +1,12 @@
 package com.ballcom.customer.infrastructure.importer;
 
+import com.ballcom.shared.events.EventType;
+import com.ballcom.shared.events.GenericDomainEvent;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,15 +18,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class CustomerImportService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    public CustomerImportService(JdbcTemplate jdbcTemplate) {
+    public CustomerImportService(JdbcTemplate jdbcTemplate, RabbitTemplate rabbitTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Scheduled(cron = "0 0 2 * * ?")
@@ -89,6 +97,8 @@ public class CustomerImportService {
                         }
                     }
 
+                    Instant occurredAt = Instant.now();
+
                     jdbcTemplate.update(
                             sql,
                             customerId,
@@ -100,8 +110,17 @@ public class CustomerImportService {
                             houseNumber,
                             city,
                             zipCode,
-                            Timestamp.from(Instant.now())
+                            Timestamp.from(occurredAt)
                     );
+
+                    publishCustomerRegisteredEvent(
+                            customerId,
+                            companyName,
+                            firstName,
+                            lastName,
+                            occurredAt
+                    );
+
                     counter++;
                 } catch (Exception e) {
                     System.err.println("Fout bij verwerken van CSV-regel " + record.getRecordNumber() + ": " + e.getMessage());
@@ -113,5 +132,35 @@ public class CustomerImportService {
         } catch (Exception e) {
             System.err.println("Fout tijdens de import: " + e.getMessage());
         }
+    }
+
+    private void publishCustomerRegisteredEvent(
+            UUID customerId,
+            String companyName,
+            String firstName,
+            String lastName,
+            Instant occurredAt
+    ) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("companyName", companyName);
+        payload.put("firstName", firstName);
+        payload.put("lastName", lastName);
+
+        GenericDomainEvent event = new GenericDomainEvent(
+                UUID.randomUUID(),
+                customerId,
+                0,
+                EventType.CUSTOMER_REGISTERED,
+                occurredAt,
+                payload
+        );
+
+        rabbitTemplate.convertAndSend(
+                "customer.exchange",
+                "customer.registered",
+                event
+        );
+
+        System.out.println("CUSTOMER IMPORT: CUSTOMER_REGISTERED event gepubliceerd voor " + customerId);
     }
 }

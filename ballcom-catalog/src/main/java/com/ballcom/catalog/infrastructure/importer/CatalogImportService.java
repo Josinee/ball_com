@@ -1,5 +1,8 @@
 package com.ballcom.catalog.infrastructure.importer;
 
+import com.ballcom.shared.events.EventType;
+import com.ballcom.shared.events.GenericDomainEvent;
+
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -7,11 +10,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +24,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Service
 public class CatalogImportService {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
-    public CatalogImportService(JdbcTemplate jdbcTemplate) {
+    public CatalogImportService(JdbcTemplate jdbcTemplate, RabbitTemplate rabbitTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Scheduled(cron = "0 0 2 * * ?")
@@ -63,6 +70,7 @@ public class CatalogImportService {
                         String owner = record.get("owner");
 
                         UUID catalogId = UUID.randomUUID();
+                        Instant occurredAt = Instant.now();
 
                         jdbcTemplate.update(
                             sql,
@@ -73,8 +81,20 @@ public class CatalogImportService {
                             category,
                             availability,
                             owner,
-                            Timestamp.from(Instant.now())
+                            Timestamp.from(occurredAt)
                         );
+
+                        publishCatalogCreatedEvent(
+                            catalogId,
+                            itemName,
+                            price,
+                            description,
+                            category,
+                            availability,
+                            owner,
+                            occurredAt
+                        );
+
                         counter++;
                     } catch (Exception e) {
                         System.out.println("Fout bij verwerken van CSV-regel " + record.getRecordNumber() + ": " + e.getMessage());
@@ -87,4 +107,41 @@ public class CatalogImportService {
                 System.err.println("Grote fout tijdens de import-verwerking: " + e.getMessage());
             }
         }
+
+    private void publishCatalogCreatedEvent(
+            UUID catalogId,
+            String itemName,
+            String price,
+            String description,
+            String category,
+            String availability,
+            String owner,
+            Instant occurredAt
+    ) {
+        Map<String, Object> payload = Map.of(
+                "itemName", itemName,
+                "price", price,
+                "description", description,
+                "category", category,
+                "availability", availability,
+                "owner", owner
+        );
+
+        GenericDomainEvent event = new GenericDomainEvent(
+                UUID.randomUUID(),
+                catalogId,
+                0,
+                EventType.CATALOG_CREATED,
+                occurredAt,
+                payload
+        );
+
+        rabbitTemplate.convertAndSend(
+                "catalog.exchange",
+                "catalog.created",
+                event
+        );
+
+        System.out.println("CATALOG IMPORT: CATALOG_CREATED event gepubliceerd voor " + catalogId);
+    }
 }
